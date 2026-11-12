@@ -1477,7 +1477,7 @@ body.low-quality .game-card, body.low-quality .overlay, body.low-quality .result
       <div class="pm-ico">🎵</div>
       <div class="pm-body">
         <div class="pm-name">打歌</div>
-        <div class="pm-desc">主玩法 · 19 首歌，全部免费</div>
+        <div class="pm-desc">主玩法 · 29 首歌，全部免费</div>
       </div>
       <div class="pm-arrow">›</div>
     </button>
@@ -1496,7 +1496,7 @@ body.low-quality .game-card, body.low-quality .overlay, body.low-quality .result
 <div id="songSelectOverlay" class="overlay">
   <button class="close-btn" id="songSelClose">关闭</button>
   <h2 class="ov-title">选一首歌</h2>
-  <div class="ov-tip">19 首全部免费，选难度再开打</div>
+  <div class="ov-tip">29 首全部免费，选难度再开打</div>
   <div class="song-sel-wrap" id="songListBox"></div>
 </div>
 
@@ -2609,6 +2609,27 @@ const bocchiSongs = [
   {id:"20", name:"那个乐队", bpm:192}
 ];
 
+const mujicaSongs = [
+  {id:"21", name:"カミノナヲ", bpm:99},
+  {id:"22", name:"ソラノムジカ", bpm:98},
+  {id:"23", name:"素晴らしき世界 でも どこにもない場所", bpm:99},
+  {id:"24", name:"カオ", bpm:140},
+  {id:"25", name:"黒のバースデイ", bpm:99},
+  {id:"26", name:"神さま、バカ", bpm:91},
+  {id:"27", name:"ア・ソング・オブ・ロマンス", bpm:157},
+  {id:"28", name:"Abracadabra", bpm:126},
+  {id:"29", name:"ハチボウセイダンス", bpm:115},
+  {id:"30", name:"Travelers' encore", bpm:92}
+];
+
+/* 所有可打歌曲 */
+function allSongs(){ return mygoSongs.concat(bocchiSongs, mujicaSongs); }
+/* 低音质音源：老歌是 ysXX.mp3，新加的 21-30 是压缩过的 ysXX.m4a */
+function songLowSrc(id){
+  var n = ("00" + id).slice(-3);
+  return "ys" + n + (parseInt(id, 10) >= 21 ? ".m4a" : ".mp3");
+}
+
 const charConfig = {
   TOM:{name:"高松灯", baseAuto:5, price:60, band:"mygo", skill:"主唱 · 每个音符基础分 +3%", scoreBonus:1.03},
   RAA:{name:"要乐奈", baseAuto:5, price:60, band:"mygo", skill:"吉他 · 连击不中断时分数 +6%", scoreBonus:1.06},
@@ -3070,7 +3091,7 @@ var TUT_PAGES = [
   },
   {
     t: "一共多少首歌？",
-    b: '总共 <b>19 首</b>，点「<b>开始游戏 → 打歌</b>」全都能打，不用解锁。<br><br>' +
+    b: '总共 <b>29 首</b>，点「<b>开始游戏 → 打歌</b>」全都能打，不用解锁。<br><br>' +
        '· <b>13 首 MyGO!!!!!</b> 专辑曲目<br>' +
        '· <b>6 首孤独摇滚</b> 曲目<br><br>' +
        '每首通关都有奖励：<b>金币 + 抽卡次数 + 歌曲积分</b>。' +
@@ -3294,7 +3315,7 @@ function buildSongChart(songId, diff, duration){
 }
 
 function songTitle(id){
-  const song = mygoSongs.concat(bocchiSongs).filter(function(s){ return s.id === id; })[0];
+  const song = allSongs().filter(function(s){ return s.id === id; })[0];
   return song ? song.name : id;
 }
 
@@ -3309,7 +3330,7 @@ function selectedChart(){
 }
 
 function prepareCoopChart(songId, diff, halfAt){
-  const song = mygoSongs.concat(bocchiSongs).filter(function(s){ return s.id === songId; })[0];
+  const song = allSongs().filter(function(s){ return s.id === songId; })[0];
   if(!song) return null;
   currentSongId = song.id;
   currentDiff = DIFFS[diff] ? diff : "d";
@@ -3514,6 +3535,8 @@ function renderSongList(){
   mygoSongs.forEach(function(song){ jobs.push(function(){ box.appendChild(create(song)); }); });
   jobs.push(function(){ box.appendChild(title("孤独摇滚 专辑", "#ff9f43")); });
   bocchiSongs.forEach(function(song){ jobs.push(function(){ box.appendChild(create(song)); }); });
+  jobs.push(function(){ box.appendChild(title("Ave Mujica 专辑", "#c9a0ff")); });
+  mujicaSongs.forEach(function(song){ jobs.push(function(){ box.appendChild(create(song)); }); });
   const run = function(){
     const t0 = performance.now();
     while(jobs.length && performance.now() - t0 < 4){ (jobs.shift())(); }
@@ -3539,10 +3562,11 @@ function selectSong(song){
   $("diffOverlay").style.display = "flex";
 
   bgm.preload = "auto";
-  /* 低音质现在统一是根目录的 ysXX.mp3（ys001.mp3 ... ys020.mp3）；旧的 0XX.mp3 只做兜底 */
+  /* 低音质：ys001-020 是 mp3，新加的 21-30 是压缩 m4a；都找不到再用旧 0XX / 高音质兜底 */
   var __lowQ = true;
   var __hiSrc = song.id + ".mp3";
-  var __ysSrc = "ys" + song.id + ".mp3";
+  var __ysSrc = songLowSrc(song.id);
+  var __ysAlt = "ys" + ("00" + song.id).slice(-3) + ".mp3";
   var __legacyLo = "0" + song.id + ".mp3";
   var __loSrc = __ysSrc;
   var __triedHi = !__lowQ, __triedLo = __lowQ, __mismatchChecked = false;
@@ -3591,6 +3615,14 @@ function selectSong(song){
       bgm.load();
       window.__pickedSrc = __loSrc;
       if(window.__prefetchSong) window.__prefetchSong(__loSrc);
+      timer = setTimeout(function(){ finish(90); }, 8000);
+      return;
+    }
+    if(__ysAlt && __ysAlt !== __loSrc && window.__pickedSrc !== __ysAlt){
+      bgm.src = __ysAlt;
+      bgm.load();
+      window.__pickedSrc = __ysAlt;
+      if(window.__prefetchSong) window.__prefetchSong(__ysAlt);
       timer = setTimeout(function(){ finish(90); }, 8000);
       return;
     }
@@ -5607,7 +5639,7 @@ document.addEventListener("DOMContentLoaded", function(){
     const btn = e.target.closest(".song-btn");
     if(!btn) return;
     const id = btn.dataset.songId;
-    const song = mygoSongs.concat(bocchiSongs).filter(s=>s.id === id)[0];
+    const song = allSongs().filter(s=>s.id === id)[0];
     if(song) selectSong(song);
   });
 
@@ -8110,14 +8142,14 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("pkStartBtn").onclick=function(){
     if(PK.mode==="net" && !PK.room){ pkTip("联机要先开房或进房。"); return; }
     var bpm=115;
-    mygoSongs.concat(typeof bocchiSongs!=="undefined"?bocchiSongs:[]).forEach(function(x){ if(x.id===PK.song) bpm=x.bpm; });
+    allSongs().forEach(function(x){ if(x.id===PK.song) bpm=x.bpm; });
     var __imp=(window.__importedSongs||[]).filter(function(x){ return x.id===PK.song; })[0] || null;
     if(__imp) bpm = __imp.bpm || 150;
     var mtime=PK.mtime||60;
     PK.on=true; PK._shown=false;
 
     // 关键：PK 不走选歌页，必须自己把谱面和音乐准备好，否则 noteSchedule 为空会秒结算
-    var song = mygoSongs.concat(typeof bocchiSongs!=="undefined"?bocchiSongs:[]).filter(function(x){ return x.id === PK.song; })[0];
+    var song = allSongs().filter(function(x){ return x.id === PK.song; })[0];
     currentSongId = PK.song;
     currentDiff  = DIFFS[PK.diff] ? PK.diff : "b";
     currentBpm   = (__imp && __imp.bpm) || (song && song.bpm) || 150;
@@ -8136,7 +8168,7 @@ document.addEventListener("DOMContentLoaded", function(){
     try{
       if(bgm){
         bgm.preload="auto";
-        var __pkSrc = __imp ? __imp.url : (currentSongId + ".mp3");
+        var __pkSrc = __imp ? __imp.url : songLowSrc(currentSongId);
         if(bgm.getAttribute("data-song") !== currentSongId){
           bgm.src = __pkSrc;
           bgm.setAttribute("data-song", currentSongId);
@@ -8636,11 +8668,13 @@ document.addEventListener("DOMContentLoaded", function(){
   CARD.onclick=function(){
     document.getElementById("moreGamesOverlay").style.display="none";
     OV.style.display="flex";
+    if(window.MujicaBGM) MujicaBGM.start();
     ensureMergeImages();
     setTimeout(start, 30);
   };
   document.getElementById("mgClose").onclick=function(){
     OV.style.display="none";
+    if(window.MujicaBGM) MujicaBGM.stop();
     if(raf){ cancelAnimationFrame(raf); raf=0; }
     closeAllOverlays();document.getElementById("moreGamesOverlay").style.display="flex";
   };
@@ -9408,6 +9442,7 @@ document.addEventListener("DOMContentLoaded", function(){
   document.getElementById("shRetry").onclick=function(){ showSelect(); };
   document.getElementById("shClose").onclick=function(){
     OV.style.display="none"; run=false;
+    if(window.MujicaBGM) MujicaBGM.stop();
     if(raf){ cancelAnimationFrame(raf); raf=0; }
     netLeave();
     closeAllOverlays(); document.getElementById("moreGamesOverlay").style.display="flex";
@@ -9415,6 +9450,7 @@ document.addEventListener("DOMContentLoaded", function(){
   CARD.onclick=function(){
     document.getElementById("moreGamesOverlay").style.display="none";
     OV.style.display="flex";
+    if(window.MujicaBGM) MujicaBGM.start();
     loadChars();
     setTimeout(showSelect,20);
   };
@@ -9766,6 +9802,29 @@ document.addEventListener("click", function(e){
   };
   var rl=document.getElementById("playersReload");
   if(rl) rl.onclick=load;
+})();
+</script>
+<script>
+/* ===== Mujica 小游戏随机 BGM：每次进入随机一首主打歌，循环播放 ===== */
+(function(){
+  var LIST=["ys021.m4a","ys022.m4a","ys023.m4a","ys024.m4a","ys025.m4a",
+            "ys026.m4a","ys027.m4a","ys028.m4a","ys029.m4a","ys030.m4a"];
+  var el=null;
+  function pick(){ return LIST[Math.floor(Math.random()*LIST.length)]; }
+  window.MujicaBGM={
+    start:function(){
+      try{
+        if(!el){ el=new Audio(); el.loop=true; el.preload="auto"; el.volume=0.42; }
+        if(!el.paused) return;
+        el.src=pick();
+        el.currentTime=0;
+        var p=el.play(); if(p&&p.catch) p.catch(function(){});
+      }catch(e){}
+    },
+    stop:function(){
+      try{ if(el){ el.pause(); el.currentTime=0; } }catch(e){}
+    }
+  };
 })();
 </script>
 <script>
@@ -10295,12 +10354,14 @@ document.addEventListener("click", function(e){
   if(backL) backL.onclick=function(){
     G.run=false; if(G.raf){ cancelAnimationFrame(G.raf); G.raf=0; }
     OV.style.display="none"; SEL.className="";
+    if(window.MujicaBGM) MujicaBGM.stop();
     closeAllOverlays(); document.getElementById("moreGamesOverlay").style.display="flex";
   };
   var close=document.getElementById("bzClose");
   if(close) close.onclick=function(){
     G.run=false; if(G.raf){ cancelAnimationFrame(G.raf); G.raf=0; }
     OV.style.display="none";
+    if(window.MujicaBGM) MujicaBGM.stop();
     closeAllOverlays(); document.getElementById("moreGamesOverlay").style.display="flex";
   };
   /* 技能按钮 */
@@ -10319,6 +10380,7 @@ document.addEventListener("click", function(e){
   if(CARD) CARD.onclick=function(){
     document.getElementById("moreGamesOverlay").style.display="none";
     OV.style.display="flex";
+    if(window.MujicaBGM) MujicaBGM.start();
     setTimeout(function(){ resize(); showSelect(); },20);
   };
   window.addEventListener("resize",function(){ if(OV.style.display==="flex"){ resize(); if(!G.run) draw(); } });

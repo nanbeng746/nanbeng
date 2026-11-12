@@ -46,6 +46,7 @@ ck_*.jpg             11 张角色立绘
 015-020.mp3          低音质·孤独摇滚
 01/13.mp3            高音质·MyGO（设置→音质“高”时读取）
 15-20.mp3            高音质·孤独摇滚
+ys021-030.m4a       低音质·Ave Mujica 新歌（80kbps AAC，约 2-3MB 一首）
 
 【部署】
 1. 整个文件夹内容传到仓库根目录（vendor 文件夹保持结构）
@@ -58,4 +59,5 @@ ck_*.jpg             11 张角色立绘
   gacha_bg / bgjq / bjbq / jqstl / wcstl / wdbq，都是 .jpg，命名必须一模一样），
   Mujica 五张立绘 ck_SACK / ck_WAKA / ck_UTSU / ck_NAMAI / ck_SAKI.jpg。
   缺了页面照样能跑，只是背景是暗的、Mujica 卡池立绘是空白。
+- 新歌 21-30 的谱面已写进 charts.js（onset-v3），音频是 ys021-030.m4a。
 - MyGO 高音质 02-12 本地无备份（当初只备份了 01、13），需要你从自己的歌里补。
