@@ -125,6 +125,18 @@ body.key-multi .touch-btn:nth-child(4){--keycolor:#8b5cf6}
 .sh-map b{font-size:13px}
 .sh-map i{font-size:10px;font-style:normal;color:rgba(255,255,255,.55);line-height:1.35}
 .sh-map.on{border-color:#ffd76a;background:rgba(255,215,106,.16);box-shadow:0 0 14px rgba(255,215,106,.4)}
+#shModeRow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%;max-width:440px}
+.sh-mode{flex:1 1 150px;max-width:210px;padding:12px 10px;border-radius:14px;border:2px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;display:flex;flex-direction:column;gap:4px;cursor:pointer}
+.sh-mode b{font-size:15px}
+.sh-mode i{font-style:normal;font-size:10.5px;color:rgba(255,255,255,.55);line-height:1.35}
+.sh-mode.on{border-color:#ff9ec4;background:rgba(255,120,170,.2);box-shadow:0 0 14px rgba(255,120,170,.45)}
+#shNetBox{display:none;flex-direction:column;gap:8px;align-items:center;width:100%;max-width:420px;padding:10px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14)}
+.sh-net-row{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+.sh-net-row button{padding:9px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.22);background:#2a1722;color:#fff;font-size:13px}
+#shNetMake{background:#ff9ec4;color:#231019;font-weight:700;border-color:#ff9ec4}
+#shNetCode{font-size:18px;font-weight:800;letter-spacing:3px;color:#ffd76a}
+#shJoinCode{width:130px;padding:9px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff;font-size:15px;letter-spacing:3px;text-align:center}
+#shNetTip{font-size:11px;color:rgba(255,255,255,.55);line-height:1.5;text-align:center}
 #shStartFight{margin-top:6px;padding:13px 40px;border-radius:26px;border:none;background:#ff9ec4;color:#231019;font-weight:800;font-size:16px;letter-spacing:2px}
 
 #shClose{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.14);color:#fff;font-size:14px;z-index:6}
@@ -357,7 +369,14 @@ body.gaming .game-side-info,body.gaming .info-bar{box-shadow:none}
 #gachaOverlay.gacha-skip #gachaResBox{animation:none}
 @keyframes gachaPop{0%{transform:scale(.82) rotate(-4deg);opacity:.2}100%{transform:none;opacity:1}}
 #coopBanner{display:none;margin-top:8px;color:#fff;background:rgba(0,0,0,.45);border:1px solid #ff7bac;border-radius:8px;padding:4px 8px}
-.judgement-text{text-align:center;font-size:28px;font-weight:bold;position:fixed;bottom:200px;left:50%;transform:translateX(-50%);pointer-events:none;z-index:13;text-shadow:0 0 12px currentColor}
+.judgement-text{text-align:center;font-size:28px;font-weight:bold;position:fixed;bottom:200px;left:50%;transform:translateX(-50%);pointer-events:none;z-index:13;text-shadow:0 0 12px currentColor;opacity:0;transition:opacity .12s ease, transform .12s ease}
+.judgement-text.show{opacity:1;transform:translateX(-50%) scale(1.06)}
+.judgement-text.g-p{color:#8ef0ff}
+.judgement-text.g-g{color:#ffd76a}
+.judgement-text.g-n{color:#ff9f43}
+.judgement-text.g-m{color:#ff4d6d;font-size:32px}
+.judgement-text.g-h{color:#c084fc}
+.judgement-text.g-s{color:#ffd700}
 .guitar-use-btn{position:absolute;bottom:80px;right:20px;z-index:10;padding:10px 16px;background:#4ecdc4;color:#000;border:none;border-radius:10px;cursor:pointer;font-size:14px}
 
 /* 游戏运行时关闭所有毛玻璃，给音频解码让出 GPU/主线程 */
@@ -1923,17 +1942,6 @@ body.low-quality .game-card, body.low-quality .overlay, body.low-quality .result
       <div id="shHp">❤❤❤❤❤</div>
     </div>
     <canvas id="shCanvas"></canvas>
-    <button id="shNetBtn">联机对战</button>
-    <div id="shNetPanel">
-      <div id="shNetTitle">和真人打</div>
-      <div id="shNetDesc">两个人输同一个 4 位房间码，竖屏舞台对打。中间有墙，绕开墙才能打到人。</div>
-      <input id="shRoomCode" maxlength="4" placeholder="房间码" autocomplete="off">
-      <div id="shNetBtns">
-        <button id="shRandBtn">随机码</button>
-        <button id="shJoinBtn">进房</button>
-      </div>
-      <div id="shNetMsg">未连接</div>
-    </div>
     <div id="shPeerTip">对手：--</div>
     <div id="shHint">按住拖动走位（上下左右）· 按住就开枪 · 中间的墙会挡子弹</div>
     <div id="shOver">
@@ -1944,7 +1952,17 @@ body.low-quality .game-card, body.low-quality .overlay, body.low-quality .result
   </div>
   <div id="shSel">
     <div class="sh-sel-title">Mujica 枪战</div>
-    <div class="sh-sel-sub">选角色 · 选地图</div>
+    <div class="sh-sel-sub" id="shSelSub">先选人机还是联机</div>
+    <div id="shModeRow">
+      <button class="sh-mode on" data-mode="ai"><b>人机对战</b><i>和电脑打，随时开</i></button>
+      <button class="sh-mode" data-mode="net"><b>联机对战</b><i>输同一个房号和朋友打</i></button>
+    </div>
+    <div id="shNetBox">
+      <div class="sh-net-row"><button id="shNetMake">开一间房</button></div>
+      <div id="shNetCode">房号：------</div>
+      <div class="sh-net-row"><input id="shJoinCode" type="tel" maxlength="6" placeholder="6 位房号"><button id="shNetJoin">进朋友的房</button></div>
+      <div id="shNetTip">两边都进房后，各自选人和地图，点开始对打。</div>
+    </div>
     <div id="shCharList"></div>
     <div id="shMapRow"></div>
     <button id="shStartFight">开始对打</button>
@@ -2417,6 +2435,7 @@ function __skillToast(txt){
   try{
     var j = $("judgeText");
     if(!j) return;
+    if(typeof flashJudge === "function"){ flashJudge(txt, "g-s"); return; }
     j.innerText = txt;
     setTimeout(function(){ if(j.innerText === txt) j.innerText = ""; }, 950);
   }catch(e){}
@@ -2553,26 +2572,29 @@ const heldKeys = new Set();
 const heldLanes = new Set();
 
 function tryCatchHold(lane, elapsed){
-  const line = laneLineY || refreshLineY(false);
   if(elapsed === undefined) elapsed = songElapsed();
+  /* 手指还按着，只接住“已经到线或更往下”的长按，不会提前吃掉刚出现的音符 */
+  const cands = [];
+  const line = laneLineY || 0;
   for(let i=0;i<liveNotes.length;i++){
     const n = liveNotes[i];
     if(n.lane !== lane || !n._hold || n._holding || n._fail || !n.mine) continue;
     const top = noteTopAt(n, elapsed, line);
-    if(top > line - 75 && top < line + 15){
-      n._holding = true;
-      n._top = top;
-      n._holdUntil = performance.now() + n._hold * 1000;
-      n._holdStart = performance.now();
-      n._holdY = top;
-      score += charSkillApplyScore(Math.round(110 * charScoreMul()));
-      combo++;
-      if(combo > maxCombo) maxCombo = combo;
-      bumpHud();
-      $("judgeText").textContent = "按住";
-      return;
-    }
+    if(top >= line - HIT_DY_UP && top <= line + 8) cands.push({i:i, top:top});
   }
+  if(!cands.length) return;
+  cands.sort(function(a,b){ return b.top - a.top; });
+  const n = liveNotes[cands[0].i];
+  n._holding = true;
+  n._top = cands[0].top;
+  n._holdUntil = performance.now() + n._hold * 1000;
+  n._holdStart = performance.now();
+  n._holdY = n._top;
+  score += charSkillApplyScore(Math.round(110 * charScoreMul()));
+  combo++;
+  if(combo > maxCombo) maxCombo = combo;
+  bumpHud();
+  flashJudge("按住", "g-h");
 }
 
 function keyUsable(k){
@@ -2644,7 +2666,7 @@ function missIfPassed(n, top, lineY){
   if(!noteIsMine(n)) return false;
   combo = 0; lastHealCombo = 0;
   $("combo").innerText = 0;
-  $("judgeText").innerText = "MISS";
+  flashJudge("MISS", "g-m");
   if(navigator.vibrate) navigator.vibrate(35);
   missCount++;
   $("missDisplay").innerText = missCount;
@@ -4411,6 +4433,46 @@ function refreshLineY(force){
   return laneLineY;
 }
 
+/* 判定：取每条轨离判定线最近的那一个音符。
+   旧写法从数组第一个开始找，同一条轨上两个音符都在判定窗内时会打错那个，
+   或者在窗边缘误触打掉刚滑过的音符，连击就莫名其妙断掉。 */
+var HIT_DY_UP = 78, HIT_DY_DOWN = 16, GOOD_DY = 34;
+function findCand(lane, elapsed, opts){
+  const line = laneLineY || 0, FT = FALL_TIME;
+  let best = -1, bestScore = 0, bestDy = 0;
+  for(let i=0;i<liveNotes.length;i++){
+    const n = liveNotes[i];
+    if(n.lane !== lane || !n.mine || n._fail || n._holding) continue;
+    if(opts.hold && !n._hold) continue;
+    if(opts.normal && n._hold) continue;
+    if(opts.auto && Math.abs(elapsed - n._arrive) > 0.17) continue;
+    const top = noteTopAt(n, elapsed, line);
+    const dy = line - top;
+    if(dy > HIT_DY_UP || dy < -HIT_DY_DOWN) continue;
+    const sc = dy > 0 ? dy : dy * 0.92;
+    if(best === -1 || sc < bestScore){ best = i; bestScore = sc; bestDy = dy; }
+  }
+  return best === -1 ? null : {idx: best, dy: bestDy, note: liveNotes[best], line: line};
+}
+
+function gradeOf(dy){
+  const a = Math.abs(dy);
+  if(a <= 20) return {text:"精准", add:110, cls:"g-p"};
+  if(a <= GOOD_DY) return {text:"GREAT", add:90, cls:"g-g"};
+  return {text:"GOOD", add:60, cls:"g-n"};
+}
+/* 判定字闪一下再淡出，避免一直挂在屏幕上让人以为没判定 */
+var __judgeT = 0;
+function flashJudge(text, cls){
+  const el = $("judgeText");
+  if(!el) return;
+  el.textContent = text;
+  el.className = "judgement-text " + (cls || "");
+  el.classList.add("show");
+  clearTimeout(__judgeT);
+  __judgeT = setTimeout(function(){ el.classList.remove("show"); }, 420);
+}
+
 function noteTopAt(n, elapsed, lineY){
   if(n._holding || n._fail) return n._holdY || 0;
   if(n._arrive === undefined) return n._top;
@@ -4569,44 +4631,39 @@ function pressFeedback(lane){
 }
 
 function hitNote(lane, elapsed){
-  const line = laneLineY || refreshLineY(false);
   if(elapsed === undefined) elapsed = songElapsed();
-  /* 输入事件发生在两帧之间，直接用当前歌曲时间算位置，比读上一帧的 DOM 更准 */
-  for(let i=0;i<liveNotes.length;i++){
-    const n = liveNotes[i];
-    if(n.lane !== lane || !n.mine || n._fail || n._holding) continue;
-    const top = noteTopAt(n, elapsed, line);
-    if(top > line - 75 && top < line + 15){
-      if(n._hold){
-        n._holding = true;
-        n._top = top;
-        n._holdUntil = performance.now() + n._hold * 1000;
-        n._holdStart = performance.now();
-        n._holdY = top;
-        score += charSkillApplyScore(Math.round(110 * charScoreMul()));
-        combo++;
-        if(combo > maxCombo) maxCombo = combo;
-        bumpHud();
-        $("judgeText").textContent = "按住";
-        return true;
-      }
-      liveNotes.splice(i, 1);
-      score += charSkillApplyScore(Math.round(100 * charScoreMul()));
-      combo++;
-      if(combo > maxCombo) maxCombo = combo;
-      bumpHud();
-      $("judgeText").textContent = Math.abs(top - line) < 22 ? "精准" : "PERFECT";
-      if(!document.body.classList.contains("reduce-motion")) flashJudgeLine();
-      showComboMile(combo);
-      if(combo - lastHealCombo >= 15){
-        lastHealCombo = combo;
-        hp = Math.min(100, hp + 10);
-        $("hpDisplay").textContent = hp;
-      }
-      return true;
-    }
+  const auto = !!(typeof isFullAuto !== "undefined" && (isFullAuto || expertAutoEnabled));
+  const c = findCand(lane, elapsed, {hold:false, normal:false, auto:auto});
+  if(!c) return false;
+  const n = c.note, line = c.line;
+  if(n._hold){
+    n._holding = true;
+    n._top = line - c.dy;
+    n._holdUntil = performance.now() + n._hold * 1000;
+    n._holdStart = performance.now();
+    n._holdY = n._top;
+    score += charSkillApplyScore(Math.round(110 * charScoreMul()));
+    combo++;
+    if(combo > maxCombo) maxCombo = combo;
+    bumpHud();
+    flashJudge("按住", "g-h");
+    return true;
   }
-  return false;
+  liveNotes.splice(c.idx, 1);
+  const g = gradeOf(c.dy);
+  score += charSkillApplyScore(Math.round(g.add * charScoreMul()));
+  combo++;
+  if(combo > maxCombo) maxCombo = combo;
+  bumpHud();
+  flashJudge(g.text, g.cls);
+  if(!document.body.classList.contains("reduce-motion")) flashJudgeLine();
+  showComboMile(combo);
+  if(combo - lastHealCombo >= 15){
+    lastHealCombo = combo;
+    hp = Math.min(100, hp + 10);
+    $("hpDisplay").textContent = hp;
+  }
+  return true;
 }
 
 var __scoreMulCache = {id:null, v:1};
@@ -4631,7 +4688,7 @@ function releaseLane(lane){
       liveNotes.splice(i, 1);
       score += charSkillApplyScore(Math.round(150 * charScoreMul()));
       bumpHud();
-      $("judgeText").textContent = "长按完成";
+      flashJudge("长按完成", "g-p");
     }else{
       /* 松太早：保留 120ms 的半透明残影，由 gameLoop 清掉 */
       n._holding = false;
@@ -4641,7 +4698,7 @@ function releaseLane(lane){
       hp = Math.max(0, hp - 3);
       $("hpDisplay").textContent = hp;
       if(hp > 0) charSkillAfterDamage();
-      $("judgeText").textContent = "松太早";
+      flashJudge("松太早", "g-n");
     }
   }
 }
@@ -4712,7 +4769,8 @@ function gameLoop(ts){
   if(jl && jl._climax !== !!inClimax){ jl.classList.toggle("climax", !!inClimax); jl._climax = !!inClimax; }
   if(inClimax && !climaxShown){
     climaxShown = true;
-    if(!(window.BENG_PLAY && window.BENG_PLAY.active)){
+    /* 高潮段是按原谱面时间算的，换音源后位置会偏；别再弹“重音密集”误导人 */
+    if(false && !(window.BENG_PLAY && window.BENG_PLAY.active)){
       $("coopBanner").style.display = "block";
       $("coopBanner").textContent = "重音密集";
     }
@@ -4729,7 +4787,7 @@ function gameLoop(ts){
         liveNotes.splice(i, 1);
         score += charSkillApplyScore(Math.round(150 * charScoreMul()));
         bumpHud();
-        $("judgeText").textContent = "长按完成";
+        flashJudge("长按完成", "g-p");
         continue;
       }
       n._top = n._holdY;
@@ -8390,12 +8448,10 @@ document.addEventListener("DOMContentLoaded", function(){
   var CV=document.getElementById("shCanvas"), ctx=CV.getContext("2d");
   var SC=document.getElementById("shScore"), HP=document.getElementById("shHp");
   var OVERBOX=document.getElementById("shOver"), OVERT=document.getElementById("shOverT"), OVERS=document.getElementById("shOverS");
-  var NETBTN=document.getElementById("shNetBtn");
-  var NETPANEL=document.getElementById("shNetPanel");
-  var NETMSG=document.getElementById("shNetMsg");
-  var CODEIN=document.getElementById("shRoomCode");
   var PEERTIP=document.getElementById("shPeerTip");
+  var net={active:false,room:null,code:"",uid:"",name:"",peerName:"",peerHp:5,peerSeen:0,_t:0,poll:0,lastId:0,mode:"ai",joined:false,digit:""};
   var SEL=document.getElementById("shSel"), FIGHTERS=document.getElementById("shFighters");
+  var MODE_ROW=document.getElementById("shModeRow"), NBOX0=document.getElementById("shNetBox");
 
   var CHARS={
     SAKI:{n:"丰川祥子", img:"ck_SAKI.png", c:"#8fb4ff"},
@@ -8423,6 +8479,7 @@ document.addEventListener("DOMContentLoaded", function(){
   var bullets=[], ebullets=[], sparks=[], wallSparks=[];
   var score=0, over=false, run=false, raf=0, last=0, T=0, holding=false;
   var pointer={x:0,y:0,ax:0,ay:0,id:null};
+
   var MATCH_TIME=60;
 
   function isNet(){ return net && net.active; }
@@ -8588,7 +8645,6 @@ document.addEventListener("DOMContentLoaded", function(){
     SC.textContent=String(score);
     var hp=Math.max(0,player.hp);
     HP.textContent="❤".repeat(hp)+"♡".repeat(Math.max(0,5-hp));
-    if(NETMSG && !isNet()) NETMSG.textContent="单机模式：对手是 AI";
   }
 
   function reset(silent){
@@ -8603,7 +8659,7 @@ document.addEventListener("DOMContentLoaded", function(){
     wallFlash=0;
     OVERBOX.style.display="none";
     setHud();
-    if(!silent && isNet()) netSend("r",{u:net.uid,c:pickChar,m:pickMap});
+    if(!silent && isNet()) netSend("r",{c:pickChar,m:pickMap});
   }
 
   function start(){
@@ -8641,7 +8697,7 @@ document.addEventListener("DOMContentLoaded", function(){
   function netHitPeer(){
     score+=120; setHud();
     for(var i=0;i<8;i++) sparks.push({x:peer.x,y:gunY(peer.y),vx:-120+Math.random()*240,vy:-150+Math.random()*150,life:.35,c:"#ffe9a8"});
-    netSend("h",{u:net.uid});
+    netSend("h",{});
   }
 
   function endGame(win){
@@ -8651,7 +8707,7 @@ document.addEventListener("DOMContentLoaded", function(){
     OVERT.textContent = win ? "WIN · 赢下舞台" : "LOSE · 被压制了";
     OVERS.textContent = "得分 "+score+"　·　剩余生命 "+Math.max(0,player.hp)+" / 5"+(isNet()?"　·　"+(peer.name||"对手"):"");
     OVERBOX.style.display="flex";
-    if(isNet()) netSend("s",{u:net.uid,n:net.name,c:pickChar,m:pickMap,x:player.x/W,y:player.y/H,hp:player.hp,f:holding?1:0});
+    if(isNet()) netState();
   }
 
   /* 高墙按“脚的位置”判：脚落进去就走不过去；矮桌/矮墙按“身体中心高度”判，可以踩后面 */
@@ -8865,71 +8921,137 @@ document.addEventListener("DOMContentLoaded", function(){
   window.addEventListener("mousemove",function(e){ if(holding) move(e); });
   window.addEventListener("mouseup",up);
 
-  /* ---------- 真人联机 ---------- */
-  var net={active:false,ch:null,code:"",uid:"",name:"",peerName:"",peerHp:5,peerSeen:0,_t:0};
-  function netMsg(t){ if(NETMSG) NETMSG.textContent=t; }
+  /* ---------- 真人联机：和协力/山丘凉借钱一样走 Supabase 房间（haru_events 里存 6 位房号别名） ---------- */
+  var NBOX=document.getElementById("shNetBox"), NCODE=document.getElementById("shNetCode"), NTIP=document.getElementById("shNetTip"), NIN=document.getElementById("shJoinCode");
+  function netTip(t){ if(NTIP) NTIP.textContent=t; }
+  function sb(){ try{ return (window.BengSocial && BengSocial.sessionClient) ? BengSocial.sessionClient() : null; }catch(e){ return null; } }
+  function myId(){ try{ return (window.BengSocial && BengSocial.selfId) ? BengSocial.selfId() : null; }catch(e){ return null; } }
   function peerAlive(){ return !!(net.active && peer.seen && performance.now()-peer.seen<6000 && peer.hp>0); }
-  function netSend(ev,payload){ if(!net.ch) return; try{ net.ch.send({type:"broadcast",event:ev,payload:payload||{}}); }catch(e){} }
+  function netSend(skill, extra){
+    var c=sb(); if(!c || !net.room) return;
+    try{ c.from("haru_events").insert({room_id:String(net.room), from_seat:"shoot_"+net.uid, skill:skill, extra:JSON.stringify(extra||{})}); }catch(e){}
+  }
   function netState(){
-    if(!net.active||!net.ch||over) return;
+    if(!net.active||!net.room||over) return;
     var now=performance.now();
-    if(now-net._t<85) return;
+    if(now-net._t<90) return;
     net._t=now;
-    netSend("s",{u:net.uid,n:net.name,c:pickChar,m:pickMap,x:player.x/W,y:player.y/H,hp:player.hp,f:holding?1:0});
+    netSend("s",{n:net.name,c:pickChar,m:pickMap,x:player.x/W,y:player.y/H,hp:player.hp,f:holding?1:0});
   }
-  function netLeave(){
-    if(net.ch){ try{ netSend("bye",{u:net.uid}); }catch(e){} }
-    try{ if(net.ch && window.BengSocial && BengSocial.sessionClient()) BengSocial.sessionClient().removeChannel(net.ch); }catch(e){}
-    net.ch=null; net.active=false; peer.seen=0;
-    if(PEERTIP) PEERTIP.style.display="none";
-  }
-  function netConnect(code){
-    var BS=window.BengSocial;
-    if(!BS||!BS.sessionClient){ netMsg("要先用抖音号登录才能联机"); return; }
-    var uid=BS.selfId?BS.selfId():null;
-    var c=BS.sessionClient();
-    if(!uid){ netMsg("本机模式不能联机，先用抖音号登录再进"); return; }
-    if(!c||!c.channel){ netMsg("没拿到登录会话，退出重登一下再试"); return; }
-    net.uid=uid; net.name=(BS.playerName&&BS.playerName())||"玩家"; net.code=code; net.active=true;
-    peer.hp=5; peer.seen=0; peer.name=""; peer.char="SACK"; peer.x=oppPos().x; peer.y=oppPos().y;
-    if(net.ch){ try{ c.removeChannel(net.ch); }catch(e){} net.ch=null; }
-    var ch=c.channel("shoot-"+code,{config:{broadcast:{self:false}}});
-    net.ch=ch;
-    ch.on("broadcast",{event:"s"},function(m){
-      var d=m.payload||{}; if(!d.u||d.u===net.uid) return;
-      peer.name=d.n||"对手"; peer.seen=performance.now();
-      peer.hp=(typeof d.hp==="number")?d.hp:5; peer.fire=!!d.f;
+  function handleRow(row){
+    if(!row || row.from_seat==="shoot_"+net.uid) return;
+    if(row.from_seat && row.from_seat.indexOf("shoot_")!==0) return;
+    var d={}; try{ d=JSON.parse(row.extra||"{}"); }catch(e){ return; }
+    var who=(row.from_seat||"").slice(6)||"对手";
+    peer.name=(typeof d.n==="string"&&d.n)?d.n:(peer.name||"对手");
+    if(row.skill==="s"){
+      peer.seen=performance.now();
+      peer.hp=(typeof d.hp==="number")?d.hp:5;
+      peer.fire=!!d.f;
       if(d.c && CHARS[d.c]) peer.char=d.c;
-      peer.x=clamp((typeof d.x==="number"?d.x:.72)*W,minX(),maxX());
-      peer.y=clamp((typeof d.y==="number"?d.y:.62)*H,minY(),maxY());
+      if(typeof d.x==="number") peer.x=clamp(d.x*W,minX(),maxX());
+      if(typeof d.y==="number") peer.y=clamp(d.y*H,minY(),maxY());
       if(PEERTIP){ PEERTIP.style.display="block"; PEERTIP.textContent="对手："+peer.name+"  ❤"+Math.max(0,peer.hp); }
-      if(peer.hp<=0 && !over) endGame(true);
-    });
-    ch.on("broadcast",{event:"h"},function(m){ var d=m.payload||{}; if(!d.u||d.u===net.uid) return; hurtPlayer(); netState(); });
-    ch.on("broadcast",{event:"bye"},function(m){
-      var d=m.payload||{}; if(!d.u||d.u===net.uid) return;
+      if(peer.hp<=0 && run && !over) endGame(true);
+    }else if(row.skill==="h"){
+      hurtPlayer();
+    }else if(row.skill==="r"){
+      if(d.m && MAPS.some(function(x){return x.id===d.m;})){ pickMap=d.m; }
+      if(run){ reset(true); }
+      netTip("对手重开了一局");
+    }else if(row.skill==="bye"){
       peer.seen=0; peer.hp=0;
       if(PEERTIP){ PEERTIP.style.display="block"; PEERTIP.textContent="对手离开了"; }
-    });
-    ch.on("broadcast",{event:"r"},function(m){
-      var d=m.payload||{}; if(!d.u||d.u===net.uid) return;
-      if(d.m && MAPS.some(function(x){return x.id===d.m;}) && d.m!==pickMap){ pickMap=d.m; buildBg(); }
-      reset(true);
-      if(!run){ run=true; last=0; if(raf) cancelAnimationFrame(raf); raf=requestAnimationFrame(loop); }
-      netMsg("对手重开了一局");
-    });
-    ch.subscribe(function(st){
-      if(st==="SUBSCRIBED"){ netMsg("已进房间 "+code+"，把码发给对方"); netState(); }
-      else if(st==="CHANNEL_ERROR"||st==="TIMED_OUT") netMsg("连接失败，再点一次进房");
-      else netMsg("连接中 "+st);
-    });
-    netMsg("正在连房间 "+code+"…");
-    if(!run) start();
+    }
   }
+  function pollOnce(){
+    var c=sb(); if(!c || !net.room) return;
+    Promise.resolve(c.from("haru_events").select("id,from_seat,skill,extra").eq("room_id",String(net.room)).gt("id", net.lastId||0).order("id",{ascending:true}).limit(60))
+      .then(function(r){
+        var rows=(r&&r.data)||[];
+        rows.forEach(function(row){
+          if(row.skill==="alias") return;
+          if(row.id>net.lastId) net.lastId=row.id;
+          if(row.from_seat==="shoot_"+net.uid) return;
+          handleRow(row);
+        });
+      }).catch(function(){});
+  }
+  function pollStart(){
+    if(net.poll) clearInterval(net.poll);
+    net.poll=setInterval(function(){ if(!document.hidden) pollOnce(); }, 700);
+  }
+  function netLeave(){
+    if(net.active) netSend("bye",{});
+    net.active=false; net.room=null; net.code=""; net.joined=false; peer.seen=0;
+    if(net.poll){ clearInterval(net.poll); net.poll=0; }
+    if(PEERTIP) PEERTIP.style.display="none";
+  }
+  function netMake(){
+    if(!myId()){ netTip("先用抖音号登录才能联机（本机模式只能打人机）。"); return; }
+    var c=sb(); if(!c||!c.rpc){ netTip("先登录账号才能开房。"); return; }
+    netTip("正在开房…");
+    Promise.resolve(c.rpc("create_coop_room",{p_song:"02",p_diff:"normal",p_rev:(window.BENG_CHART_REV||"onset-v2")}))
+      .then(function(made){
+        if(!made||made.error||!made.data){ netTip("开房失败："+((made&&made.error&&made.error.message)||"")+"（可能没登录或服务器忙）"); return null; }
+        var code=made.data;
+        return Promise.resolve(c.rpc("join_coop_room",{p_code:String(code)})).then(function(joined){
+          var rid=joined&&joined.data&&joined.data.room_id;
+          if(!rid){ netTip("房开好了但进不去。"); return; }
+          var digit=String(Math.floor(100000+Math.random()*900000));
+          net.room=rid; net.code=String(code); net.digit=digit; net.active=true; net.joined=true; net.uid=myId();
+          net.name=(window.BengSocial&&BengSocial.playerName&&BengSocial.playerName())||"玩家";
+          net.lastId=0; peer.seen=0; peer.name="";
+          try{ c.from("haru_events").insert({room_id:String(rid),from_seat:"shoot_host",skill:"alias",extra:JSON.stringify({digit:digit,real:String(code)})}); }catch(e){}
+          if(NCODE) NCODE.textContent="房号："+digit;
+          netTip("把房号 "+digit+" 发给朋友，让他在这里输进去。");
+          pollOnce(); pollStart();
+        });
+      }).catch(function(e){ netTip("开房出错："+((e&&e.message)||"网络问题")); });
+  }
+  function netJoin(){
+    if(!myId()){ netTip("先用抖音号登录才能联机（本机模式只能打人机）。"); return; }
+    var input=((NIN&&NIN.value)||"").replace(/[^0-9]/g,"").slice(0,6);
+    if(input.length<6){ netTip("要填 6 位数字房号。"); return; }
+    var c=sb(); if(!c){ netTip("先登录账号才能进房。"); return; }
+    netTip("正在进房…");
+    Promise.resolve(c.from("haru_events").select("extra").like("extra",'%"digit":"'+input+'"%').order("id",{ascending:false}).limit(8))
+      .then(function(q){
+        var real=null;
+        ((q&&q.data)||[]).forEach(function(row){
+          if(real) return;
+          try{ var o=JSON.parse(row.extra); if(String(o.digit)===input) real=o.real; }catch(e){}
+        });
+        if(!real){ netTip("找不到这个房间（房号错了，或者对方还没开）。"); return null; }
+        return Promise.resolve(c.rpc("join_coop_room",{p_code:String(real)})).then(function(joined){
+          var rid=joined&&joined.data&&joined.data.room_id;
+          if(!rid){ netTip("进不去：房满、已关闭，或者试得太频繁。"); return; }
+          net.room=rid; net.code=String(real); net.active=true; net.joined=true; net.uid=myId();
+          net.name=(window.BengSocial&&BengSocial.playerName&&BengSocial.playerName())||"玩家";
+          net.lastId=0; peer.seen=0; peer.name="";
+          if(NCODE) NCODE.textContent="房号："+input;
+          netTip("进房了。选好人和地图，点开始对打。");
+          pollOnce(); pollStart();
+        });
+      }).catch(function(){ netTip("连不上服务器，稍后再试。"); });
+  }
+  var MK=document.getElementById("shNetMake"), JN=document.getElementById("shNetJoin");
+  if(MK) MK.onclick=netMake;
+  if(JN) JN.onclick=netJoin;
 
   /* ---------- 选人 / 选图 ---------- */
+  function setMode(m){
+    net.mode=m;
+    document.querySelectorAll("#shModeRow .sh-mode").forEach(function(b){ b.classList.toggle("on", b.dataset.mode===m); });
+    if(NBOX0) NBOX0.style.display = (m==="net") ? "flex" : "none";
+    var sub=document.getElementById("shSelSub");
+    if(sub) sub.textContent = (m==="net") ? "联机：先开房/进房，再选人和地图" : "人机：选好人和地图直接开打";
+    var b=document.getElementById("shStartFight");
+    if(b) b.textContent = (m==="net") ? (net.joined ? "开始对打" : "先开房或进房") : "开始对打";
+  }
   function renderSelect(){
     if(!FIGHTERS) return;
+    setMode(net.mode);
     var row=document.getElementById("shMapRow");
     var list=document.getElementById("shCharList");
     document.querySelectorAll("#shMapRow button").forEach(function(b){
@@ -8975,7 +9097,15 @@ document.addEventListener("DOMContentLoaded", function(){
       b.onclick=function(){ pickMap=m.id; buildBg(); renderSelect(); };
       mapBox.appendChild(b);
     });
+    document.querySelectorAll("#shModeRow .sh-mode").forEach(function(b){
+      b.onclick=function(){
+        if(net.mode==="net" && b.dataset.mode==="ai") netLeave();
+        setMode(b.dataset.mode);
+      };
+    });
     document.getElementById("shStartFight").onclick=function(){
+      if(net.mode==="net" && !net.joined){ netTip("联机要先开房，或者填朋友的 6 位房号进房。"); return; }
+      if(net.mode==="ai" && net.active) netLeave();
       SEL.style.display="none";
       if(FIGHTERS) FIGHTERS.style.display="block";
       start();
@@ -8987,29 +9117,11 @@ document.addEventListener("DOMContentLoaded", function(){
     /* 选人页是覆盖层，点背景不做事 */
   });
 
-  if(NETBTN) NETBTN.onclick=function(){
-    if(!SEL || SEL.style.display==="flex") return;
-    var show=NETPANEL.style.display==="flex";
-    NETPANEL.style.display=show?"none":"flex";
-    if(!CODEIN.value) CODEIN.value=String(Math.floor(1000+Math.random()*9000));
-    if(show && isNet()) netLeave();
-  };
-  var RANDBTN=document.getElementById("shRandBtn");
-  if(RANDBTN) RANDBTN.onclick=function(){ CODEIN.value=String(Math.floor(1000+Math.random()*9000)); };
-  var JOINBTN=document.getElementById("shJoinBtn");
-  if(JOINBTN) JOINBTN.onclick=function(){
-    var code=(CODEIN.value||"").replace(/[^0-9]/g,"").slice(0,4);
-    if(code.length<4){ netMsg("房间码是 4 位数字"); return; }
-    NETPANEL.style.display="none";
-    netConnect(code);
-  };
-
   document.getElementById("shRetry").onclick=function(){ showSelect(); };
   document.getElementById("shClose").onclick=function(){
     OV.style.display="none"; run=false;
     if(raf){ cancelAnimationFrame(raf); raf=0; }
     netLeave();
-    if(NETPANEL) NETPANEL.style.display="none";
     closeAllOverlays(); document.getElementById("moreGamesOverlay").style.display="flex";
   };
   CARD.onclick=function(){
