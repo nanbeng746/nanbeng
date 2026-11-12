@@ -1354,7 +1354,7 @@ body.low-quality .game-card, body.low-quality .overlay, body.low-quality .result
 .speed-foot{display:flex;justify-content:space-between;font-size:11px;color:#7e7391;margin-top:6px}
 #bzOverlay{position:fixed;inset:0;z-index:49;display:none;flex-direction:column;background:#06060b;touch-action:none;overflow:hidden}
 #bzCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
-#bzHud{position:absolute;left:10px;right:10px;top:10px;z-index:3;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;font-size:13px;color:#fff}
+#bzHud{position:absolute;left:10px;right:10px;top:10px;z-index:3;display:flex;justify-content:center;gap:14px;align-items:center;pointer-events:none;font-size:14px;font-weight:700;color:#fff;white-space:nowrap;text-shadow:0 1px 4px rgba(0,0,0,.9)}
 #bzHud b{font-size:19px}
 #bzHp{color:#ff7bac;letter-spacing:2px}
 #bzTimer{color:#ffd76a;font-weight:800}
@@ -1784,7 +1784,11 @@ body.low-quality .game-card, body.low-quality .overlay, body.low-quality .result
     <input id="coopCodeInput" maxlength="16" placeholder="16位房间码" style="flex:1;padding:10px;border-radius:8px;border:1px solid #ff7bac;background:#222;color:#fff">
     <button class="friend-btn" id="coopJoinBtn" type="button">加入</button>
   </div>
-  <button class="friend-btn alt" id="coopCreateBtn" type="button">用当前曲目开房</button>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+    <button class="friend-btn alt" id="coopCreateBtn" type="button">用当前曲目开房</button>
+    <button class="friend-btn" id="coopRandomBtn" type="button">随机进房</button>
+    <button class="friend-btn gray" id="coopBackBtn" type="button">退出协力</button>
+  </div>
   <label style="font-size:13px;color:#ddd">本机声音延迟 <input id="coopOffset" type="range" min="-300" max="300" value="0"> <span id="coopOffsetText">0 ms</span></label>
   <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
     <button class="friend-btn" id="coopReadyBtn" type="button">准备</button>
@@ -1961,7 +1965,7 @@ body.low-quality .game-card, body.low-quality .overlay, body.low-quality .result
 
 <div id="bzOverlay">
   <canvas id="bzCanvas"></canvas>
-  <div id="bzHud">
+  <div id="bzHud" style="display:none">
     <div id="bzHp"></div>
     <div id="bzCaught"></div>
     <div id="bzTimer"></div>
@@ -1986,9 +1990,10 @@ body.low-quality .game-card, body.low-quality .overlay, body.low-quality .result
       <button class="bz-opt" data-d="hard">困难</button>
     </div>
     <button class="bz-go" id="bzGo">开始追</button>
+    <div class="bz-row" style="margin-top:8px"><button class="bz-opt" id="bzBackList">返回更多游戏</button></div>
     <div class="bz-help">
-      手机：按住屏幕拖，车跟着手指走（上下左右都能动），右下四个技能随时点。<br>
-      键盘：WASD / 方向键开车，空格=氮气，Q=网兜，E=鸣笛，R=减速带。<br>
+      车会一直往前开，横版追人：上下拖动换车道，往前拖一点=踩油门。<br>
+      键盘：W/S 换道、D 油门、A 刹车；空格=氮气，Q=网兜，E=鸣笛，R=减速带。<br>
       一直撞到同一个人，血条打空就会被抓；开着氮气或者刚被撞过（无敌）时直接抓人。<br>
       普通模式：抓到就结束这个人。无尽模式：抓到后她可能挣脱继续跑，而且会更快。
     </div>
@@ -2040,6 +2045,7 @@ body.low-quality .game-card, body.low-quality .overlay, body.low-quality .result
       <div class="sh-net-row"><button id="shNetMake">开一间房</button></div>
       <div id="shNetCode">房号：------</div>
       <div class="sh-net-row"><input id="shJoinCode" type="tel" maxlength="6" placeholder="6 位房号"><button id="shNetJoin">进朋友的房</button></div>
+      <div class="sh-net-row"><button id="shNetRandom">随机进房</button></div>
       <div id="shNetTip">两边都进房后，各自选人和地图，点开始对打。</div>
     </div>
     <div id="shCharList"></div>
@@ -2081,7 +2087,8 @@ body.low-quality .game-card, body.low-quality .overlay, body.low-quality .result
         <input id="pkCodeIn" type="tel" maxlength="6" placeholder="6 位房号">
       </div>
       <div class="yan-net-row"><button id="pkJoin">进朋友的房</button></div>
-      <div id="pkNetTip">两边都打完之后自动比分数。房号是 6 位数字。</div>
+      <div class="yan-net-row"><button id="pkRandom">随机进房</button></div>
+      <div id="pkNetTip">房间码是 6 位数字；两边都进房、各打一轮，服务器改不了分数，会自己比。</div>
     </div>
     <div class="ys-row"><label>曲目</label></div>
     <div id="pkSongList"></div>
@@ -2139,6 +2146,7 @@ body.low-quality .game-card, body.low-quality .overlay, body.low-quality .result
         <input id="ensCodeIn" type="tel" maxlength="6" placeholder="6 位房号">
       </div>
       <div class="yan-net-row"><button id="ensJoin">进朋友的房</button></div>
+      <div class="yan-net-row"><button id="ensRandom">随机进房</button></div>
       <div id="ensNetTip">联机要登录账号。开房把房号发朋友，进来后各自挑没人坐的乐器。</div>
     </div>
     <div class="ys-row" id="ensMusicRow"><label>伴奏</label>
@@ -2192,6 +2200,7 @@ body.low-quality .game-card, body.low-quality .overlay, body.low-quality .result
         <input class="haru-code-input" id="haruJoinCodeInput" placeholder="输入 6 位房间码" maxlength="8" autocomplete="off">
       </div>
       <button class="hm-btn" id="haruJoinRoom"><b>加入朋友的房间</b><span>进去之后你就是素世，负责打断他。</span></button>
+      <button class="hm-btn" id="haruJoinRandom"><b>随机进房</b><span>自动进一间别人开着的房，人满了就再点一次。</span></button>
     </div>
 
     <div id="haruRoomPlayWrap" style="display:none">
@@ -2274,6 +2283,152 @@ body.low-quality .game-card, body.low-quality .overlay, body.low-quality .result
 })();
 </script>
 
+<script>
+/* ================= 联机公共工具：开房 / 按房号进房 / 随机进房 =================
+   房主开房后往 haru_events 写一行 skill="alias"，extra={digit: 6 位房号, real: 真实房间码, kind: 玩法}。
+   别人进房时只查这一行拿到真实房间码，再用 join_coop_room 加入。
+   （旧写法用 JSON 字符串 LIKE 查询，PostgREST 会把引号吃掉，所以经常查不到房间。） */
+(function(){
+  var ROOM_TYPES=["shoot","pk","yan","ens","haru","coop"];
+  function sb(){ try{ return (window.BengSocial && BengSocial.sessionClient) ? BengSocial.sessionClient() : null; }catch(e){ return null; } }
+  function uid(){ try{ return (window.BengSocial && BengSocial.selfId) ? BengSocial.selfId() : null; }catch(e){ return null; } }
+  function myName(){ try{ return (window.BengSocial && BengSocial.playerName && BengSocial.playerName()) || "玩家"; }catch(e){ return "玩家"; } }
+  function newDigit(){ return String(Math.floor(100000+Math.random()*900000)); }
+  function roomIdFrom(res){
+    if(!res) return null;
+    if(res.error) return null;
+    var d=res.data;
+    if(typeof d==="number"||typeof d==="string") return d;      /* 有的版本直接返回房间 id */
+    if(d && d.ok===true && d.room_id) return d.room_id;
+    if(d && d.room_id) return d.room_id;
+    return null;
+  }
+  function errMsg(res){
+    if(!res) return "没有返回";
+    if(res.error) return res.error.message || res.error.details || res.error.hint || "服务器报错";
+    if(typeof res.data==="string" && res.data.length && !/^\d+$/.test(res.data)) return res.data;
+    if(res.data && res.data.ok===false) return res.data.msg || res.data.message || "被服务器拒绝";
+    return "";
+  }
+  function parseExtra(row){
+    try{ var o=JSON.parse((row && row.extra)||"{}"); return (o && typeof o==="object") ? o : null; }catch(e){ return null; }
+  }
+  /* 查房号对应的真实房间码；没填类型就把所有玩法的房号都认 */
+  function resolveDigit(digit, kind){
+    var c=sb(); if(!c || !digit) return Promise.resolve(null);
+    return Promise.resolve(c.from("haru_events").select("id,room_id,skill,extra").eq("skill","alias").order("id",{ascending:false}).limit(80))
+      .then(function(q){
+        var rows=(q&&q.data)||[];
+        var hit=null, hitId=-1;
+        rows.forEach(function(row){
+          var o=parseExtra(row);
+          if(!o || String(o.digit)!==String(digit)) return;
+          if(kind && o.kind && o.kind!==kind) return;
+          if(row.id>hitId && o.real){ hit=o; hitId=row.id; }
+        });
+        return hit ? String(hit.real) : null;
+      })
+      .catch(function(){ return null; });
+  }
+  /* 最新且没满的房间（随机进房用） */
+  function randomRoom(kind){
+    var c=sb(); if(!c) return Promise.resolve(null);
+    var q=c.from("coop_rooms").select("id,code,status,created_at").order("id",{ascending:false}).limit(40);
+    return Promise.resolve(q).then(function(r){
+      var rooms=((r&&r.data)||[]).filter(function(x){ return x && x.status!=="done" && x.status!=="closed" && x.code; });
+      if(!rooms.length) return null;
+      /* 优先同玩法最近开的那几间：先看 alias 里有没有 kind 标记 */
+      return Promise.resolve(c.from("haru_events").select("room_id,skill,extra").eq("skill","alias").order("id",{ascending:false}).limit(80))
+        .then(function(a){
+          var byRoom={};
+          ((a&&a.data)||[]).forEach(function(row){ var o=parseExtra(row); if(o&&o.digit) byRoom[String(row.room_id)]=o; });
+          var pool=rooms.filter(function(rm){ var m=byRoom[String(rm.id)]; return !kind || !m || m.kind===kind || !m.kind; });
+          if(!pool.length) pool=rooms;
+          var pick=pool[Math.floor(Math.random()*pool.length)];
+          var m=byRoom[String(pick.id)];
+          return {code:String(pick.code), roomId:pick.id, digit:m?String(m.digit):null, kind:m?m.kind||"":""};
+        }).catch(function(){
+          var pick=rooms[Math.floor(Math.random()*rooms.length)];
+          return {code:String(pick.code), roomId:pick.id, digit:null, kind:""};
+        });
+    }).catch(function(){ return null; });
+  }
+  /* 开房：建房 + 自己是房主 + 写房号别名 */
+  function host(kind, opts){
+    opts=opts||{};
+    var c=sb();
+    if(!c) return Promise.reject(new Error("先登录账号（本机模式不能联机）。"));
+    if(!uid()) return Promise.reject(new Error("先登录账号（本机模式不能联机）。"));
+    var rev=window.BENG_CHART_REV||"onset-v2";
+    return Promise.resolve(c.rpc("create_coop_room",{p_song:opts.song||"02",p_diff:opts.diff||"normal",p_rev:rev}))
+      .then(function(made){
+        if(made && made.error) throw new Error("开房失败："+errMsg(made));
+        var code=made && made.data;
+        if(!code) throw new Error("开房失败：服务器没有给房间码");
+        return Promise.resolve(c.rpc("join_coop_room",{p_code:String(code)})).then(function(joined){
+          var rid=roomIdFrom(joined);
+          if(!rid) throw new Error("房开好了但进不去："+(errMsg(joined)||"稍后再试"));
+          var digit=newDigit();
+          try{
+            c.from("haru_events").insert({room_id:String(rid),from_seat:"host_"+kind,skill:"alias",
+              extra:JSON.stringify({digit:digit,real:String(code),kind:kind,by:myName(),ts:Date.now()})}).then(function(){},function(){});
+          }catch(e){}
+          return {roomId:rid, code:String(code), digit:digit};
+        });
+      });
+  }
+  /* 按房号进房 */
+  function joinByDigit(digit, kind){
+    var c=sb();
+    if(!c) return Promise.reject(new Error("先登录账号（本机模式不能联机）。"));
+    if(!uid()) return Promise.reject(new Error("先登录账号（本机模式不能联机）。"));
+    digit=String(digit||"").replace(/[^0-9]/g,"").slice(0,6);
+    if(digit.length!==6) return Promise.reject(new Error("房号是 6 位数字。"));
+    return resolveDigit(digit, kind).then(function(real){
+      if(!real) throw new Error("找不到这个房间：房号可能输错了，或者房主还没开房。");
+      return Promise.resolve(c.rpc("join_coop_room",{p_code:String(real)})).then(function(joined){
+        var rid=roomIdFrom(joined);
+        if(!rid) throw new Error("进不去："+(errMsg(joined)||"房间已满或已关闭"));
+        return {roomId:rid, code:String(real), digit:digit};
+      });
+    });
+  }
+  /* 随机进一间房：先找现行房间列表；没权限就退回“房号别名”里最新的 */
+  function joinRandom(kind){
+    var c=sb();
+    if(!c) return Promise.reject(new Error("先登录账号（本机模式不能联机）。"));
+    if(!uid()) return Promise.reject(new Error("先登录账号（本机模式不能联机）。"));
+    return randomRoom(kind).then(function(pick){
+      if(pick){
+        return Promise.resolve(c.rpc("join_coop_room",{p_code:String(pick.code)})).then(function(joined){
+          var rid=roomIdFrom(joined);
+          if(!rid) throw new Error("随机到的那间房进不去（可能满了），再点一次试试。");
+          return {roomId:rid, code:String(pick.code), digit:pick.digit||"", kind:pick.kind||""};
+        });
+      }
+      return Promise.resolve(c.from("haru_events").select("id,room_id,skill,extra").eq("skill","alias").order("id",{ascending:false}).limit(60))
+        .then(function(q){
+          var list=((q&&q.data)||[]).map(function(row){ var o=parseExtra(row); return o&&o.digit?{row:row,o:o}:null; })
+            .filter(function(x){ return x && (!kind || !x.o.kind || x.o.kind===kind); });
+          if(!list.length) throw new Error("现在没有可以加入的房间，自己开一间吧。");
+          var pickN=Math.floor(Math.random()*Math.min(list.length,5));
+          var it=list[pickN];
+          return Promise.resolve(c.rpc("join_coop_room",{p_code:String(it.o.real)})).then(function(joined){
+            var rid=roomIdFrom(joined);
+            if(!rid) throw new Error("那间房进不去了（满了或关了），再点一次。");
+            return {roomId:rid, code:String(it.o.real), digit:String(it.o.digit), kind:it.o.kind||""};
+          });
+        });
+    });
+  }
+  window.BengNet={
+    types:ROOM_TYPES,
+    sb:sb, uid:uid, myName:myName, newDigit:newDigit,
+    roomIdFrom:roomIdFrom, errMsg:errMsg,
+    host:host, joinByDigit:joinByDigit, joinRandom:joinRandom, resolveDigit:resolveDigit
+  };
+})();
+</script>
 <script src="charts.js"></script>
 <script src="supabase-config.js"></script>
 <script src="vendor/supabase.js"></script>
@@ -3941,59 +4096,56 @@ function haruRoomOpen(){
   if(!haruSB()) $("haruRoomTip").textContent = "先登录自己的账号，真人模式要登录才能开房。";
 }
 
+function haruApplyRoom(r, asHost){
+  HARU2.roomId=r.roomId; HARU2.code=r.code; HARU2.digit=r.digit||"";
+  HARU2.seat = asHost ? "front" : "back";
+  HARU2.role = asHost ? "RAA" : "SOY";
+  HARU2.online = true; HARU2.lastEvtId = 0;
+  $("haruRoomCode").textContent = r.digit || r.code;
+  $("haruRoomCreateWrap").style.display = "none";
+  $("haruRoomPlayWrap").style.display = asHost ? "block" : "none";
+  haruRoomPollStart();
+}
+
 async function haruCreateRoom(){
-  const c = haruSB();
-  const uid = (window.BengSocial && BengSocial.selfId) ? BengSocial.selfId() : null;
-  if(!c || !uid){ $("haruRoomTip").textContent = "先登录自己的账号，未登录不能开房。"; return; }
+  if(!window.BengNet){ $("haruRoomTip").textContent = "联机组件没加载，刷新页面。"; return; }
   $("haruRoomTip").textContent = "正在开房…";
   try{
-    const made = await c.rpc("create_coop_room", { p_song:"02", p_diff:"normal", p_rev: (window.BENG_CHART_REV || "onset-v2") });
-    if(made.error){ $("haruRoomTip").textContent = "开房失败：" + (made.error.message || ""); return; }
-    const code = made.data;
-    const joined = await c.rpc("join_coop_room", { p_code: code });
-    const rid = joined && joined.data && joined.data.room_id;
-    if(!rid){ $("haruRoomTip").textContent = "房开好了但进不去，稍后再试。"; return; }
-    const digit = String(Math.floor(100000 + Math.random()*900000));
-    HARU2.roomId = rid; HARU2.code = String(code); HARU2.digit = digit; HARU2.seat = "front"; HARU2.role = "RAA"; HARU2.online = true; HARU2.lastEvtId = 0;
-    try{ await c.from("haru_events").insert({room_id:String(rid), from_seat:"host", skill:"alias", extra: JSON.stringify({digit:digit, real:String(code)})}); }catch(e){}
-    $("haruRoomCode").textContent = digit;
-    $("haruRoomCreateWrap").style.display = "none";
-    $("haruRoomPlayWrap").style.display = "block";
+    const r = await window.BengNet.host("haru");
+    haruApplyRoom(r, true);
     $("haruRoomTip").textContent = "把上面这个码发给朋友，让他输入加入。你要等他也进来才能开始。";
-    haruRoomPollStart();
   }catch(e){
-    $("haruRoomTip").textContent = "开房出错：" + (e && e.message ? e.message : e);
+    $("haruRoomTip").textContent = (e && e.message) ? e.message : "开房出错";
   }
 }
 
 async function haruJoinRoom(){
-  const c = haruSB();
-  const uid = (window.BengSocial && BengSocial.selfId) ? BengSocial.selfId() : null;
-  if(!c || !uid){ $("haruRoomTip").textContent = "先登录自己的账号，未登录不能进房。"; return; }
+  if(!window.BengNet){ $("haruRoomTip").textContent = "联机组件没加载，刷新页面。"; return; }
   const input = ($("haruJoinCodeInput").value || "").trim();
   if(!input){ $("haruRoomTip").textContent = "先填房间码。"; return; }
   $("haruRoomTip").textContent = "正在进房…";
   try{
-    let code = input;
-    if(/^\d{6}$/.test(input)){
-      const q = await c.from("haru_events").select("extra").like("extra", "%%\"digit\":\""+input+"\"%%").order("id",{ascending:false}).limit(5);
-      let real = null;
-      for(const row of (q.data||[])){ try{ const o=JSON.parse(row.extra); if(String(o.digit)===input){ real=o.real; break; } }catch(e){} }
-      if(!real){ $("haruRoomTip").textContent = "找不到这个房间（码过期或输错），让朋友重新开一间。"; return; }
-      code = real;
-    }
-    const joined = await c.rpc("join_coop_room", { p_code: code });
-    const rid = joined && joined.data && joined.data.room_id;
-    if(!rid){ $("haruRoomTip").textContent = "进不去：码不对、已满、已关闭，或试得太频繁。"; return; }
-    HARU2.roomId = rid; HARU2.code = code; HARU2.seat = "back"; HARU2.role = "SOY"; HARU2.online = true; HARU2.lastEvtId = 0;
-    $("haruRoomCode").textContent = code;
-    $("haruRoomCreateWrap").style.display = "none";
-    $("haruRoomPlayWrap").style.display = "none";
+    const r = await window.BengNet.joinByDigit(input, "haru");
+    haruApplyRoom(r, false);
     $("haruRoomTip").textContent = "你进来了，角色是素世。等房主点开始。";
-    await c.rpc("set_coop_ready", { p_room: rid, p_ready: true });
-    haruRoomPollStart();
+    const c = haruSB();
+    if(c) try{ await c.rpc("set_coop_ready", { p_room: r.roomId, p_ready: true }); }catch(e){}
   }catch(e){
-    $("haruRoomTip").textContent = "进房出错：" + (e && e.message ? e.message : e);
+    $("haruRoomTip").textContent = (e && e.message) ? e.message : "进房出错";
+  }
+}
+
+async function haruJoinRandom(){
+  if(!window.BengNet){ $("haruRoomTip").textContent = "联机组件没加载，刷新页面。"; return; }
+  $("haruRoomTip").textContent = "正在找一间空房…";
+  try{
+    const r = await window.BengNet.joinRandom("haru");
+    haruApplyRoom(r, false);
+    $("haruRoomTip").textContent = "随机进房成功，你是素世。等房主点开始。";
+    const c = haruSB();
+    if(c) try{ await c.rpc("set_coop_ready", { p_room: r.roomId, p_ready: true }); }catch(e){}
+  }catch(e){
+    $("haruRoomTip").textContent = (e && e.message) ? e.message : "没找到能进的房";
   }
 }
 
@@ -6008,6 +6160,7 @@ document.addEventListener("DOMContentLoaded", function(){
   $("haruModeBack").onclick = haruModeClose;
   $("haruCreateRoom").onclick = haruCreateRoom;
   $("haruJoinRoom").onclick = haruJoinRoom;
+  if($("haruJoinRandom")) $("haruJoinRandom").onclick = haruJoinRandom;
   $("haruRoomStart").onclick = haruRoomStart;
   $("haruRoomBack").onclick = haruRoomLeave;
   $("soyExitBtn").onclick = function(){ haruEmit("end","exit"); haruRoomLeave(); };
@@ -6185,6 +6338,7 @@ document.addEventListener("DOMContentLoaded", function(){
       </div>
       <div class="yan-net-row">
         <button id="yanJoin">进朋友的房</button>
+      <div class="yan-net-row"><button id="yanRandom">随机进房</button></div>
       </div>
       <div id="yanNetCode"></div>
       <div id="yanNetTip">联机要登录账号，房主演波奇，进房的人演山田凉。</div>
@@ -6792,51 +6946,38 @@ document.addEventListener("DOMContentLoaded", function(){
 
   function netTip(t){ G("yanNetTip").textContent=t; }
 
+  function yanApplyNet(r, asHost){
+    S.netRoom=r.roomId; S.me=asHost?"front":"back"; S.remoteSeat=asHost?"back":"front"; S.netOn=true;
+    G("yanNetCode").textContent=r.digit||r.code;
+  }
   G("yanMake").onclick=function(){
-    var c=sb(), id=myId();
-    if(!c||!id){ netTip("先登录账号才能开房。"); return; }
+    if(!window.BengNet){ netTip("联机组件没加载，刷新页面。"); return; }
     netTip("正在开房…");
-    Promise.resolve(c.rpc("create_coop_room",{p_song:"02",p_diff:"normal",p_rev:(window.BENG_CHART_REV||"onset-v2")}))
-      .then(function(made){
-        if(!made||made.error){ netTip("开房失败："+((made&&made.error&&made.error.message)||"")); return null; }
-        var code=made.data;
-        return Promise.resolve(c.rpc("join_coop_room",{p_code:String(code)}))
-          .then(function(joined){
-            var rid=joined&&joined.data&&joined.data.room_id;
-            if(!rid){ netTip("房开好了但进不去，稍后再试。"); return; }
-            S.netRoom=rid; S.me="front"; S.remoteSeat="back"; S.netOn=true;
-            var digit=String(Math.floor(100000+Math.random()*900000));
-            try{ c.from("haru_events").insert({room_id:String(rid),from_seat:"host",skill:"alias",extra:JSON.stringify({digit:digit,real:String(code)})}); }catch(e){}
-            G("yanNetCode").textContent=digit;
-            netTip("把 "+digit+" 发给朋友。你是波奇，等他进来就点开始。");
-          });
-      });
+    window.BengNet.host("yan").then(function(r){
+      yanApplyNet(r,true);
+      netTip("把 "+r.digit+" 发给朋友。你是波奇，等他进来就点开始。");
+    }).catch(function(e){ netTip((e&&e.message)||"开房失败"); });
   };
 
   G("yanJoin").onclick=function(){
-    var c=sb(), id=myId();
-    if(!c||!id){ netTip("先登录账号才能进房。"); return; }
+    if(!window.BengNet){ netTip("联机组件没加载，刷新页面。"); return; }
     var input=(G("yanCodeIn").value||"").trim();
-    if(!/^\d{6}$/.test(input)){ netTip("要填 6 位数字的房间码。"); return; }
     netTip("正在进房…");
-    Promise.resolve(c.from("haru_events").select("extra").like("extra",'%"digit":"'+input+'"%').limit(8))
-      .then(function(q){
-        var real=null;
-        ((q&&q.data)||[]).forEach(function(row){
-          if(real) return;
-          try{ var o=JSON.parse(row.extra); if(String(o.digit)===input) real=o.real; }catch(e){}
-        });
-        if(!real){ netTip("找不到这个房间，让房主重新开一间。"); return; }
-        return Promise.resolve(c.rpc("join_coop_room",{p_code:real}))
-          .then(function(joined){
-            var rid=joined&&joined.data&&joined.data.room_id;
-            if(!rid){ netTip("进不去：码不对或已满。"); return; }
-            S.netRoom=rid; S.me="back"; S.remoteSeat="front"; S.netOn=true;
-            G("yanNetCode").textContent=input;
-            var p=pos.back; p.x=S.w*.76;p.y=S.h*.5;p.tx=p.x;p.ty=p.y;
-            netTip("进房成功。你是山田凉，等房主点开始。");
-          });
-      });
+    window.BengNet.joinByDigit(input,"yan").then(function(r){
+      yanApplyNet(r,false);
+      var p=pos.back; p.x=S.w*.76;p.y=S.h*.5;p.tx=p.x;p.ty=p.y;
+      netTip("进房成功。你是山田凉，等房主点开始。");
+    }).catch(function(e){ netTip((e&&e.message)||"进房失败"); });
+  };
+  var yanRand=G("yanRandom");
+  if(yanRand) yanRand.onclick=function(){
+    if(!window.BengNet){ netTip("联机组件没加载，刷新页面。"); return; }
+    netTip("正在找一间空房…");
+    window.BengNet.joinRandom("yan").then(function(r){
+      yanApplyNet(r,false);
+      var p=pos.back; p.x=S.w*.76;p.y=S.h*.5;p.tx=p.x;p.ty=p.y;
+      netTip("随机进房成功，你是山田凉，等房主点开始。");
+    }).catch(function(e){ netTip((e&&e.message)||"没找到能进的房"); });
   };
 
   var card=G("gameCardYan"); if(card) card.onclick=openGame;
@@ -7625,51 +7766,39 @@ document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("ensNetBox").style.display="block";
   };
 
+  function ensApplyNet(r, asHost){
+    S.room=r.roomId; S.net=true; S.mode="net"; S.lastEv=0;
+    document.getElementById("ensCodeIn").value=r.digit||r.code;
+    if(!asHost){ netReport(); }
+    if(S.timer) clearInterval(S.timer);
+    S.timer=setInterval(function(){ netPoll(); if(!asHost) netReport(); },1500);
+  }
   document.getElementById("ensMake").onclick=function(){
-    if(!loggedIn()){ netTip("先登录账号才能开房。"); return; }
-    var c=sb();
-    if(!c){ netTip("先登录账号才能开房。"); return; }
+    if(!window.BengNet){ netTip("联机组件没加载，刷新页面。"); return; }
     netTip("正在开房…");
-    Promise.resolve(c.rpc("create_coop_room",{p_song:"02",p_diff:"normal",p_rev:(window.BENG_CHART_REV||"onset-v2")}))
-      .then(function(made){
-        if(!made||made.error){ netTip("开房失败："+((made&&made.error&&made.error.message)||"")); return null; }
-        var code=made.data;
-        return Promise.resolve(c.rpc("join_coop_room",{p_code:String(code)}))
-          .then(function(joined){
-            var rid=joined&&joined.data&&joined.data.room_id;
-            if(!rid){ netTip("房间开了但进不去，稍后再试。"); return; }
-            S.room=rid; S.net=true; S.mode="net"; S.lastEv=0;
-            var digit=String(Math.floor(100000+Math.random()*900000));
-            try{ c.from("haru_events").insert({room_id:String(rid),from_seat:"host",skill:"alias",extra:JSON.stringify({digit:digit,real:String(code)})}); }catch(e){}
-            document.getElementById("ensCodeIn").value=digit;
-            netTip("房号 "+digit+"，发给朋友。每局开始后会同步开场。");
-            if(S.timer) clearInterval(S.timer);
-            S.timer=setInterval(netPoll,1500);
-          });
-      });
+    window.BengNet.host("ens").then(function(r){
+      ensApplyNet(r,true);
+      netTip("房号 "+(r.digit||r.code)+"，发给朋友。每局开始后会同步开场。");
+    }).catch(function(e){ netTip((e&&e.message)||"开房失败"); });
   };
 
   document.getElementById("ensJoin").onclick=function(){
-    if(!loggedIn()){ netTip("先登录账号才能进房。"); return; }
-    var c=sb();
-    if(!c){ netTip("先登录账号才能进房。"); return; }
+    if(!window.BengNet){ netTip("联机组件没加载，刷新页面。"); return; }
     var input=(document.getElementById("ensCodeIn").value||"").trim();
-    if(!/^\d{6}$/.test(input)){ netTip("要填 6 位数字房号。"); return; }
     netTip("正在进房…");
-    c.from("haru_events").select("extra").like("extra",'%"digit":"'+input+'"%').limit(10)
-      .then(function(q){
-        var real=null;
-        ((q&&q.data)||[]).forEach(function(row){
-          if(real) return;
-          try{ var o=JSON.parse(row.extra); if(String(o.digit)===input) real=o.real; }catch(e){}
-        });
-        if(!real){ netTip("找不到这个房间。"); return; }
-        S.room=real; S.net=true; S.mode="net"; S.lastEv=0;
-        netTip("进房了。挑一个没人坐的乐器，等房主开始。");
-        netReport();
-        if(S.timer) clearInterval(S.timer);
-        S.timer=setInterval(function(){ netPoll(); netReport(); },1500);
-      }).catch(function(){ netTip("连不上服务器。"); });
+    window.BengNet.joinByDigit(input,"ens").then(function(r){
+      ensApplyNet(r,false);
+      netTip("进房了。挑一个没人坐的乐器，等房主开始。");
+    }).catch(function(e){ netTip((e&&e.message)||"进房失败"); });
+  };
+  var ensRand=document.getElementById("ensRandom");
+  if(ensRand) ensRand.onclick=function(){
+    if(!window.BengNet){ netTip("联机组件没加载，刷新页面。"); return; }
+    netTip("正在找一间空房…");
+    window.BengNet.joinRandom("ens").then(function(r){
+      ensApplyNet(r,false);
+      netTip("随机进房成功。挑一个没人坐的乐器，等房主开始。");
+    }).catch(function(e){ netTip((e&&e.message)||"没找到能进的房"); });
   };
 
   /* ---------- 自由演奏 ---------- */
@@ -7919,23 +8048,13 @@ document.addEventListener("DOMContentLoaded", function(){
   });
 
   document.getElementById("pkMake").onclick=function(){
-    if(!loggedIn()){ pkTip("先登录账号才能开房。"); return; }
-    var c=sb(); if(!c){ pkTip("先登录账号才能开房。"); return; }
+    if(!window.BengNet){ pkTip("联机组件没加载，刷新页面。"); return; }
     pkTip("正在开房…");
-    Promise.resolve(c.rpc("create_coop_room",{p_song:"02",p_diff:"normal",p_rev:(window.BENG_CHART_REV||"onset-v2")}))
-      .then(function(made){
-        if(!made||made.error){ pkTip("开房失败："+((made&&made.error&&made.error.message)||"")); return null; }
-        var code=made.data;
-        return Promise.resolve(c.rpc("join_coop_room",{p_code:String(code)})).then(function(joined){
-          var rid=joined&&joined.data&&joined.data.room_id;
-          if(!rid){ pkTip("房间开了但进不去。"); return; }
-          PK.room=rid; PK.net=true;
-          var digit=String(Math.floor(100000+Math.random()*900000));
-          try{ c.from("haru_events").insert({room_id:String(rid),from_seat:"pkhost",skill:"alias",extra:JSON.stringify({digit:digit,real:String(code)})}); }catch(e){}
-          document.getElementById("pkCodeIn").value=digit;
-          pkTip("房号 "+digit+"，发给朋友。两边都打完后自动比分数。");
-        });
-      });
+    window.BengNet.host("pk",{song:PK.song, diff:PK.diff}).then(function(r){
+      PK.room=r.roomId; PK.net=true; PK.digit=r.digit;
+      document.getElementById("pkCodeIn").value=r.digit;
+      pkTip("房号 "+r.digit+"，发给朋友。两边都打完后自动比分数。");
+    }).catch(function(e){ pkTip((e&&e.message)||"开房失败"); });
   };
 
   var timeRow=document.getElementById("pkTimeRow");
@@ -7950,23 +8069,27 @@ document.addEventListener("DOMContentLoaded", function(){
     });
   }
 
-  document.getElementById("pkJoin").onclick=function(){
-    if(!loggedIn()){ pkTip("先登录账号才能进房。"); return; }
-    var c=sb(); if(!c){ pkTip("先登录账号才能进房。"); return; }
-    var input=(document.getElementById("pkCodeIn").value||"").trim();
-    if(!/^\d{6}$/.test(input)){ pkTip("要填 6 位数字房号。"); return; }
+  function pkJoinDigit(digit){
+    if(!window.BengNet){ pkTip("联机组件没加载，刷新页面。"); return; }
     pkTip("正在进房…");
-    c.from("haru_events").select("extra").like("extra",'%"digit":"'+input+'"%').limit(10)
-      .then(function(q){
-        var real=null;
-        ((q&&q.data)||[]).forEach(function(row){
-          if(real) return;
-          try{ var o=JSON.parse(row.extra); if(String(o.digit)===input) real=o.real; }catch(e){}
-        });
-        if(!real){ pkTip("找不到这个房间。"); return; }
-        PK.room=real; PK.net=true;
-        pkTip("进房了。点开始打你这一轮。");
-      }).catch(function(){ pkTip("连不上服务器。"); });
+    window.BengNet.joinByDigit(digit,"pk").then(function(r){
+      PK.room=r.roomId; PK.net=true; PK.digit=digit;
+      pkTip("进房了。点开始打你这一轮。");
+    }).catch(function(e){ pkTip((e&&e.message)||"进房失败"); });
+  }
+  document.getElementById("pkJoin").onclick=function(){
+    var input=(document.getElementById("pkCodeIn").value||"").trim();
+    pkJoinDigit(input);
+  };
+  var pkRand=document.getElementById("pkRandom");
+  if(pkRand) pkRand.onclick=function(){
+    if(!window.BengNet){ pkTip("联机组件没加载，刷新页面。"); return; }
+    pkTip("正在找一间空房…");
+    window.BengNet.joinRandom("pk").then(function(r){
+      PK.room=r.roomId; PK.net=true; PK.digit=r.digit||"";
+      if(r.digit) document.getElementById("pkCodeIn").value=r.digit;
+      pkTip("随机进房成功。点开始打你这一轮。");
+    }).catch(function(e){ pkTip((e&&e.message)||"没找到能进的房"); });
   };
 
   function pkReadRival(cb){
@@ -8888,27 +9011,72 @@ document.addEventListener("DOMContentLoaded", function(){
   }
 
   function update(dt){
-    if(!over){
-      if(!isNet() || peerAlive()) T+=dt;
-      if(T>=MATCH_TIME){
-        var win = isNet() ? (player.hp>=peer.hp) : (player.hp>=ai.hp);
-        endGame(win);
+    G.t+=dt;
+    /* 横版：车一直在开，玩家只能上下（A/D 给一点前后微调） */
+    var ax=0, ay=0;
+    if(keys.left) ay-=1;
+    if(keys.right) ay+=1;
+    if(keys.up) ax-=1;
+    if(keys.down) ax+=1;
+    var st=D();
+    var cruise=W*0.46;                       // 基础巡航速度（简单档下明显比人快）
+    var sp=cruise*(car.boost>0?2.35:1)*(car.slow>0?0.55:1);
+    car.vx += (sp-car.vx)*Math.min(1,dt*1.6);   // 松开也一直往前
+    if(ax) car.vx += ax*W*0.18*dt*3;
+    car.vx=clamp(car.vx,W*0.06,W*0.75);
+    if(ay){ car.vy += ay*sp*dt*7; }
+    car.vy*=Math.pow(0.002,dt);
+    var maxVy=sp*0.85;
+    car.vy=clamp(car.vy,-maxVy,maxVy);
+    car.x+=car.vx*dt; car.y+=car.vy*dt;
+    if(car.x>W*0.94){ car.x=W*0.94; }       // 车大多数时候停在屏幕左侧往前追
+    if(car.x<W*0.12){ car.x=W*0.12; car.vx=Math.max(car.vx,W*0.2); }
+    car.y=clamp(car.y,roadTop+car.h*0.35,roadTop+roadH-car.h*0.12);
+    if(car.vx>4) car.dir=1;
+    car.tilt += ((car.vy/160) - car.tilt)*Math.min(1,dt*8);
+    car.boost=Math.max(0,car.boost-dt);
+    car.shield=Math.max(0,car.shield-dt);
+    car.slowUntil=Math.max(0,car.slowUntil-dt);
+    car.inv=Math.max(0,car.inv-dt);
+    G.slow=Math.max(0,(G.slow||0)-dt);
+
+    stepGirls(dt);
+
+    /* 技能冷却 */
+    SKILLS.forEach(function(s){ cd[s.id]=Math.max(0,cd[s.id]-dt); });
+    drawSkills();
+
+    /* 追到判定 */
+    var cb=carBox();
+    for(var i=0;i<girls.length;i++){
+      var g=girls[i];
+      if(g.caught && !g.free) continue;
+      var gh=girlH(g), gw=g._w||gh*0.4;
+      var gx0=g.x-gw*0.30, gx1=g.x+gw*0.30, gy0=g.y-gh*0.42, gy1=g.y;
+      if(cb.x<gx1 && cb.x+cb.w>gx0 && cb.y<gy1 && cb.y+cb.h>gy0){
+        if(car.boost>0 || car.inv>0){
+          g.caught=true; g.free=false; g.hp=0;
+          burst(g.x,g.y-gh*0.5,18,g.color);
+          onCaught(g);
+        }else{
+          car.hp-=1; car.inv=1.1;
+          g.hp-=1; g.hit=.18;
+          burst(car.x+car.w*0.3,car.y-car.h*0.2,10,"#ff5f87");
+          car.vx*=0.45; car.vy*=0.2;
+                if(car.hp<=0){ endGame(false); return; }
+        }
       }
     }
-    if(holding && !over){
-      player.x=clamp(player.x,minX(),maxX());
-      player.y=clamp(player.y,minY(),maxY());
-      if(!blockedAt(player.x,player.y)){ /* 站桌子里时往外挪 */ }
-      if((player._fireT=(player._fireT||0)-dt)<=0){ player._fireT=.10; firePlayer(); }
-    }else player._fireT=0;
-    player.inv=Math.max(0,player.inv-dt);
-    player.recoil=Math.max(0,player.recoil-dt*5.5);
-    if(!isNet()) updateAI(dt);
-    else{ netState(); if(peer.seen && performance.now()-peer.seen>6000){ peer.seen=0; if(PEERTIP){ PEERTIP.style.display="block"; PEERTIP.textContent="对手掉线了"; } } }
-    updateBullets(dt);
-    wallFlash=Math.max(0,wallFlash-dt);
-    for(var i=sparks.length-1;i>=0;i--){ var s=sparks[i]; s.x+=s.vx*dt; s.y+=s.vy*dt; s.vy+=280*dt; s.life-=dt; if(s.life<=0) sparks.splice(i,1); }
-    for(var j=wallSparks.length-1;j>=0;j--){ wallSparks[j].life-=dt; if(wallSparks[j].life<=0) wallSparks.splice(j,1); }
+
+    /* 粒子 / 音波 */
+    for(var p=particles.length-1;p>=0;p--){
+      var q=particles[p]; q.x+=q.vx*dt; q.y+=q.vy*dt; q.vy+=160*dt; q.life-=dt;
+      if(q.life<=0) particles.splice(p,1);
+    }
+    for(var r=rings.length-1;r>=0;r--){ rings[r].r+=W*0.9*dt; rings[r].life-=dt*1.4; if(rings[r].life<=0) rings.splice(r,1); }
+    for(var t=toasts.length-1;t>=0;t--){ var tt=toasts[t]; tt.life-=dt; tt.y-=dt*30; if(tt.life<=0) toasts.splice(t,1); }
+    /* 计时 / 血量 / 抓到数 直接写在画布上，不依赖 DOM，永远不会卡在 0s */
+    drawHud();
   }
 
   function drawGun(gx,gy,face,recoil,accent){
@@ -9115,56 +9283,44 @@ document.addEventListener("DOMContentLoaded", function(){
     if(PEERTIP) PEERTIP.style.display="none";
   }
   function netMake(){
-    if(!myId()){ netTip("先用抖音号登录才能联机（本机模式只能打人机）。"); return; }
-    var c=sb(); if(!c||!c.rpc){ netTip("先登录账号才能开房。"); return; }
+    if(!window.BengNet){ netTip("联机组件没加载，刷新一下页面。"); return; }
     netTip("正在开房…");
-    Promise.resolve(c.rpc("create_coop_room",{p_song:"02",p_diff:"normal",p_rev:(window.BENG_CHART_REV||"onset-v2")}))
-      .then(function(made){
-        if(!made||made.error||!made.data){ netTip("开房失败："+((made&&made.error&&made.error.message)||"")+"（可能没登录或服务器忙）"); return null; }
-        var code=made.data;
-        return Promise.resolve(c.rpc("join_coop_room",{p_code:String(code)})).then(function(joined){
-          var rid=joined&&joined.data&&joined.data.room_id;
-          if(!rid){ netTip("房开好了但进不去。"); return; }
-          var digit=String(Math.floor(100000+Math.random()*900000));
-          net.room=rid; net.code=String(code); net.digit=digit; net.active=true; net.joined=true; net.uid=myId();
-          net.name=(window.BengSocial&&BengSocial.playerName&&BengSocial.playerName())||"玩家";
-          net.lastId=0; peer.seen=0; peer.name="";
-          try{ c.from("haru_events").insert({room_id:String(rid),from_seat:"shoot_host",skill:"alias",extra:JSON.stringify({digit:digit,real:String(code)})}); }catch(e){}
-          if(NCODE) NCODE.textContent="房号："+digit;
-          netTip("把房号 "+digit+" 发给朋友，让他在这里输进去。");
-          pollOnce(); pollStart();
-        });
-      }).catch(function(e){ netTip("开房出错："+((e&&e.message)||"网络问题")); });
+    window.BengNet.host("shoot").then(function(r){
+      net.room=r.roomId; net.code=r.code; net.digit=r.digit; net.active=true; net.joined=true; net.uid=window.BengNet.uid();
+      net.name=window.BengNet.myName(); net.lastId=0; peer.seen=0; peer.name="";
+      if(NCODE) NCODE.textContent="房号："+r.digit;
+      netTip("把房号 "+r.digit+" 发给朋友，让他在这里输进去。");
+      pollOnce(); pollStart();
+    }).catch(function(e){ netTip((e&&e.message)||"开房失败"); });
   }
   function netJoin(){
-    if(!myId()){ netTip("先用抖音号登录才能联机（本机模式只能打人机）。"); return; }
+    if(!window.BengNet){ netTip("联机组件没加载，刷新一下页面。"); return; }
     var input=((NIN&&NIN.value)||"").replace(/[^0-9]/g,"").slice(0,6);
-    if(input.length<6){ netTip("要填 6 位数字房号。"); return; }
-    var c=sb(); if(!c){ netTip("先登录账号才能进房。"); return; }
     netTip("正在进房…");
-    Promise.resolve(c.from("haru_events").select("extra").like("extra",'%"digit":"'+input+'"%').order("id",{ascending:false}).limit(8))
-      .then(function(q){
-        var real=null;
-        ((q&&q.data)||[]).forEach(function(row){
-          if(real) return;
-          try{ var o=JSON.parse(row.extra); if(String(o.digit)===input) real=o.real; }catch(e){}
-        });
-        if(!real){ netTip("找不到这个房间（房号错了，或者对方还没开）。"); return null; }
-        return Promise.resolve(c.rpc("join_coop_room",{p_code:String(real)})).then(function(joined){
-          var rid=joined&&joined.data&&joined.data.room_id;
-          if(!rid){ netTip("进不去：房满、已关闭，或者试得太频繁。"); return; }
-          net.room=rid; net.code=String(real); net.active=true; net.joined=true; net.uid=myId();
-          net.name=(window.BengSocial&&BengSocial.playerName&&BengSocial.playerName())||"玩家";
-          net.lastId=0; peer.seen=0; peer.name="";
-          if(NCODE) NCODE.textContent="房号："+input;
-          netTip("进房了。选好人和地图，点开始对打。");
-          pollOnce(); pollStart();
-        });
-      }).catch(function(){ netTip("连不上服务器，稍后再试。"); });
+    window.BengNet.joinByDigit(input,"shoot").then(function(r){
+      net.room=r.roomId; net.code=r.code; net.active=true; net.joined=true; net.uid=window.BengNet.uid();
+      net.name=window.BengNet.myName(); net.lastId=0; peer.seen=0; peer.name="";
+      if(NCODE) NCODE.textContent="房号："+input;
+      netTip("进房了。选好人和地图，点开始对打。");
+      pollOnce(); pollStart();
+    }).catch(function(e){ netTip((e&&e.message)||"进房失败"); });
+  }
+  function netRandom(){
+    if(!window.BengNet){ netTip("联机组件没加载，刷新一下页面。"); return; }
+    netTip("正在找一间空房…");
+    window.BengNet.joinRandom("shoot").then(function(r){
+      net.room=r.roomId; net.code=r.code; net.active=true; net.joined=true; net.uid=window.BengNet.uid();
+      net.name=window.BengNet.myName(); net.lastId=0; peer.seen=0; peer.name="";
+      if(NCODE) NCODE.textContent="房号："+(r.digit||"随机房");
+      netTip("随机进房成功，选好人和地图就开打。");
+      pollOnce(); pollStart();
+    }).catch(function(e){ netTip((e&&e.message)||"没找到能进的房"); });
   }
   var MK=document.getElementById("shNetMake"), JN=document.getElementById("shNetJoin");
   if(MK) MK.onclick=netMake;
   if(JN) JN.onclick=netJoin;
+  var RN=document.getElementById("shNetRandom");
+  if(RN) RN.onclick=netRandom;
 
   /* ---------- 选人 / 选图 ---------- */
   function setMode(m){
@@ -9689,44 +9845,45 @@ document.addEventListener("click", function(e){
 
   function spawnGirls(){
     girls=[];
-    /* 五个人分散在三条车道、每车道最多两人，并且互不重叠 */
-    var gh=girlH(null), gw=gh*0.55;
-    var lanes=[roadTop+H*0.08, roadTop+H*0.19, roadTop+H*0.30];
-    var slots=[];
-    for(var L=0;L<lanes.length;L++){
-      slots.push({x:W*0.90, y:lanes[L]});
-      slots.push({x:W*0.72, y:lanes[L]});
-    }
-    /* 打乱后前五个人各占一格 */
-    for(var i=slots.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=slots[i]; slots[i]=slots[j]; slots[j]=t; }
-    CH.forEach(function(c,i){
-      var sl=slots[i];
-      girls.push({
+    var gh=girlH(null);
+    var band=roadTop+H*0.08;          // 横向错开：有点上下的变化，但主要在 X 轴散开
+    for(var i=0;i<CH.length;i++){
+      var c=CH[i];
+      var g={
         key:c.key, name:c.n, color:c.c,
-        x: sl.x+(Math.random()-.5)*W*0.10,
-        y: clamp(sl.y+(Math.random()-.5)*H*0.04, roadTop+gh*0.25, roadTop+roadH-gh*0.05),
+        x: W*0.55+i*W*0.13,            // 依次排在车前面（第一个就在屏幕右侧）
+        y: roadTop+roadH*0.45+(i%2?1:-1)*band*0.6,
         hp: G.diff==="hard"?3:2,
-        speed: (W*0.058)*(G.mode==="endless"?1.08:1)*(i%2?1:-1)*(0.9+Math.random()*0.2),
-        baseSpeed: 0, hit:0, caught:false, escapes:0, free:0, dir:1,
-        think:0, tx:0, ty:0
-      });
-      girls[girls.length-1].baseSpeed=girls[girls.length-1].speed;
-    });
-    keepApart();
+        baseSpeed:0, speed:0, hit:0, caught:false, escapes:0, free:0, dir:1,
+        think:0, vy:0
+      };
+      g.baseSpeed=girlSpeed(g, i);
+      g.y=clamp(g.y,roadTop+gh*0.35,roadTop+roadH*0.85);
+      girls.push(g);
+    }
+  }
+  /* 人往前跑；难度越高跑得越快，但永远比车慢一点 */
+  function girlSpeed(g, i){
+    var d=LV[G.diff]||LV.mid;
+    var base=W*0.20;
+    /* 简单：跑得慢好抓；普通：追一阵；困难：比车快点，得靠氮气 */
+    var k={easy:0.62, mid:0.92, hard:1.22}[G.diff]||0.92;
+    return base*k*(1+(i%3)*0.07)*(G.mode==="endless"?1.06:1);
   }
   /* 两个人之间至少留一点缝，追的人多了也不会糊成一团 */
   function keepApart(){
+    /* 横版：同屏的人也尽量别叠在一起 —— 只做上下轻微错开 */
     for(var i=0;i<girls.length;i++){
       for(var j=i+1;j<girls.length;j++){
         var a=girls[i], b=girls[j];
-        var ah=girlH(a), bh=girlH(b);
-        var minX=(ah*0.55+bh*0.55)*0.55, minY=(ah+bh)*0.36;
-        var dx=b.x-a.x, dy=b.y-a.y;
-        if(Math.abs(dx)<minX && Math.abs(dy)<minY){
-          var push=(minY-Math.abs(dy))/2+1;
-          if(dy>=0){ a.y-=push; b.y+=push; } else { a.y+=push; b.y-=push; }
-          a.y=clamp(a.y,roadTop+ah*0.25,roadTop+roadH-ah*0.05);
-          b.y=clamp(b.y,roadTop+bh*0.25,roadTop+roadH-bh*0.05);
+        if(a.caught && !a.free) continue;
+        if(b.caught && !b.free) continue;
+        var gh=girlH(a);
+        if(Math.abs(b.x-a.x)<gh*0.28 && Math.abs(b.y-a.y)<gh*0.5){
+          var push=(gh*0.5-Math.abs(b.y-a.y))/2+1;
+          if(b.y>=a.y){ a.y-=push; b.y+=push; } else { a.y+=push; b.y-=push; }
+          a.y=clamp(a.y,roadTop+gh*0.35,roadTop+roadH*0.85);
+          b.y=clamp(b.y,roadTop+gh*0.35,roadTop+roadH*0.85);
         }
       }
     }
@@ -9734,9 +9891,9 @@ document.addEventListener("click", function(e){
 
 
   function reset(){
-    G.t=0; G.caught=0; G.fleeCount=0;
+    G.t=0; G.caught=0; G.fleeCount=0; G.slow=0;
     car.hp=car.maxHp=D().hp; car.inv=0; car.boost=0; car.shield=0; car.slowUntil=0; car.vx=0; car.vy=0;
-    car.x=W*0.28; car.y=roadTop+roadH*0.5; car.dir=1;
+    car.x=W*0.22; car.y=roadTop+roadH*0.55; car.dir=1; car.vx=W*0.30; car.vy=0;
     particles=[]; rings=[]; toasts=[];
     SKILLS.forEach(function(s){ cd[s.id]=0; });
     spawnGirls();
@@ -9817,39 +9974,34 @@ document.addEventListener("click", function(e){
   }
 
   function stepGirls(dt){
-    var carBox={x:car.x,y:car.y};
     girls.forEach(function(g){
       g.hit=Math.max(0,g.hit-dt);
       if(g.caught && !g.free) return;
-      var sp=g.baseSpeed*D().run*(car.slowUntil>0?1:1);
+      /* 一直往前跑（横版追车），被减速带减速时变慢 */
+      var sp=g.baseSpeed*(car.slowUntil>0?0.45:1)*(G.slow>0?0.45:1);
+      g.x+=sp*dt;
+      g.dir=1;
       g.think-=dt;
       if(g.think<=0){
-        g.think=.5+Math.random()*.8;
-        /* 远离车 + 随机变道 */
-        var away=g.x>carBox.x?1:-1;
-        g.tx=clamp(g.x+away*(W*0.2)*(0.4+Math.random()*0.8),W*0.06,W*0.97);
-        g.ty=clamp(g.y+(Math.random()-.5)*roadH*0.6,roadTop+girlH(g)*0.2,roadTop+roadH-girlH(g)*0.05);
-        if(G.mode==="endless" && Math.random()<0.35) g.tx=clamp(g.x+(Math.random()-.5)*W*0.5,W*0.06,W*0.97);
+        g.think=.6+Math.random()*1.1;
+        /* 上下小幅变道躲车 */
+        g.vy=((Math.random()<.5?-1:1)*roadH)*(0.10+Math.random()*0.12);
       }
-      var dx=g.tx-g.x, dy=g.ty-g.y, d=Math.hypot(dx,dy)||1;
-      var spNow=g.caught? 0 : sp;
-      g.x+=dx/d*Math.min(spNow*dt,Math.abs(dx));
-      g.y+=dy/d*Math.min(spNow*dt,Math.abs(dy));
-      if(Math.abs(g.x-g.tx)<2) g.x += (g.x>carBox.x?1:-1)*spNow*dt*0.4;
-      g.dir = (g.x - prevX(g)) >= 0 ? 1 : -1;
-      g.x=clamp(g.x,W*0.05,W*0.97);
-      g.y=clamp(g.y,roadTop+girlH(g)*0.25,roadTop+roadH-girlH(g)*0.05);
+      if(g.vy){
+        g.y+=g.vy*dt;
+        if(g.y<roadTop+girlH(g)*0.35 || g.y>roadTop+roadH*0.85){ g.vy=-g.vy; g.y=clamp(g.y,roadTop+girlH(g)*0.35,roadTop+roadH*0.85); }
+      }
+      /* 被追到屏幕左边就重新从右边出现（普通人会换车道） */
+      if(g.x< -W*0.10){
+        g.x=W*(1.02+Math.random()*0.20);
+        g.y=roadTop+roadH*(0.30+Math.random()*0.4);
+      }
+      if(g.x>W*1.6) g.x=W*1.5;
     });
     keepApart();
   }
-  function prevX(g){ var p=g._px||g.x; g._px=g.x; return p; }
-
-  /* 判定盒只取车头前方一小块：要真的怼上去才抓得到，不会擦身而过就算 */
-  function carBox(){
-    /* 车头朝 dir 的反方向（图是车头朝左的） */
-    var fx = car.x - car.dir*car.w*0.30;
-    return {x:fx-car.w*0.12, y:car.y-car.h*0.5, w:car.w*0.24, h:car.h*0.62};
-  }
+  function prevX(g){ return g.x; }
+  function carBox(){ return {x:car.x+car.w*0.30, y:car.y-car.h*0.42, w:car.w*0.26, h:car.h*0.56}; }
 
   function update(dt){
     G.t+=dt;
@@ -9886,8 +10038,8 @@ document.addEventListener("click", function(e){
     SKILLS.forEach(function(s){ cd[s.id]=Math.max(0,cd[s.id]-dt); });
     drawSkills();
 
-    /* 追到判定 */
-    var cb=carBox();
+    /* 追到判定：车头前一小块 */
+    var cb={x:car.x+car.w*0.30, y:car.y-car.h*0.42, w:car.w*0.26, h:car.h*0.56};
     for(var i=0;i<girls.length;i++){
       var g=girls[i];
       if(g.caught && !g.free) continue;
@@ -9924,7 +10076,7 @@ document.addEventListener("click", function(e){
     hud();
     if(G.mode==="endless" && g.escapes<MAX_ESCAPE && Math.random()<ENDLESS_CHANCE){
       g.free=true; g.caught=false; g.escapes++;
-      g.x=clamp(g.x+(Math.random()-.5)*W*0.2,W*0.06,W*0.97);
+      g.x=clamp(g.x+W*0.25,W*0.4,W*1.2);
       g.hp=1; g.baseSpeed*=1.18; g.think=0;
       G.caught--; G.fleeCount++;
       toast(g.name+" 挣脱了！速度更快", "#ffd76a");
@@ -9989,10 +10141,21 @@ document.addEventListener("click", function(e){
     });
   }
   function hud(){
-    var hpEl=document.getElementById("bzHp"), cEl=document.getElementById("bzCaught"), tEl=document.getElementById("bzTimer");
-    if(hpEl) hpEl.textContent=("🚗".repeat(Math.max(0,car.hp))+"·".repeat(Math.max(0,car.maxHp-car.hp))).trim();
-    if(cEl) cEl.innerHTML="抓到 <b>"+G.caught+"</b> / "+CH.length+(G.mode==="endless"&&G.fleeCount?"　逃跑 "+G.fleeCount:"");
-    if(tEl) tEl.textContent=G.t.toFixed(0)+"s";
+    var ob=document.getElementById("bzHud");
+    if(!ob) return;
+    try{
+      var m=(ob.dataset&&ob.dataset.t0)?1:0;
+      ob.textContent="🚗".repeat(Math.max(0,car.hp))+"　抓到 "+G.caught+" / "+CH.length+"　"+Math.round(G.t)+"s";
+    }catch(e){}
+  }
+
+  function drawHud(){
+    ctx.font="800 16px system-ui"; ctx.textAlign="center";
+    ctx.fillStyle="#fff";
+    ctx.fillText("❤".repeat(Math.max(0,car.hp))+"  抓到 "+G.caught+" / "+CH.length, W/2, 26);
+    ctx.fillStyle="#ffd76a";
+    ctx.fillText(Math.round(G.t)+"s", W-36, 26);
+    ctx.textAlign="left";
   }
 
   /* ---------- 渲染 ---------- */
@@ -10025,7 +10188,7 @@ document.addEventListener("click", function(e){
     /* 路面下方的暗区做行人道过渡 */
     var pb=ctx.createLinearGradient(0,roadTop+roadH,0,H);
     pb.addColorStop(0,"#161a24"); pb.addColorStop(1,"#06080d");
-    ctx.fillStyle=pb; ctx.fillRect(0,roadTop+roadH,W,H*0.80-roadTop-roadH);
+    ctx.fillStyle=pb; ctx.fillRect(0,roadTop+roadH,W,H*0.86-roadTop-roadH);
     ctx.fillStyle="#04060a"; ctx.fillRect(0,H*0.80,W,H*0.20);
     /* 车头灯照亮的区域 */
     var lg=ctx.createRadialGradient(car.x-car.dir*car.w*0.3,car.y-car.h*0.2,4,car.x-car.dir*car.w*0.3,car.y-car.h*0.2,car.w*0.9);
@@ -10033,7 +10196,7 @@ document.addEventListener("click", function(e){
     ctx.fillStyle=lg; ctx.fillRect(0,roadTop,W,roadH);
   }
 
-  function draw(){
+  function __drawReal(){
     drawRoad();
     girls.slice().sort(function(a,b){ return a.y-b.y; }).forEach(drawGirl);
     drawCar();
@@ -10051,10 +10214,16 @@ document.addEventListener("click", function(e){
     ctx.globalAlpha=1;
   }
 
+  var __dbgTick=0, __dbgDraws=0;
+  function draw(){
+    __dbgDraws++;
+    __drawReal();
+  }
   function loop(ts){
     if(!G.run) return;
     var dt=G.last?Math.min(.05,(ts-G.last)/1000):.016;
     G.last=ts;
+    __dbgTick++;
     update(dt); draw();
     if(G.run) G.raf=requestAnimationFrame(loop); else G.raf=0;
   }
@@ -10070,10 +10239,12 @@ document.addEventListener("click", function(e){
   CV.addEventListener("pointermove",function(e){
     if(!G.run || stick.id===null || e.pointerId!==stick.id) return;
     var p=pt(e);
-    /* 拖动 = 车跟着手指走，上下左右都行 */
-    car.x=clamp(car.x+(p.x-stick.lx),car.w*0.5,W-car.w*0.5);
-    car.y=clamp(car.y+(p.y-stick.ly),roadTop+car.h*0.35,roadTop+roadH-car.h*0.22);
-    if(Math.abs(p.x-stick.lx)>2) car.dir=(p.x-stick.lx)>0?1:-1;
+    /* 横版：上下拖换道；往前大幅拖 = 顶一下油门，往后拖 = 收油门 */
+    car.y=clamp(car.y+(p.y-stick.ly),roadTop+car.h*0.35,roadTop+roadH-car.h*0.12);
+    var dx=p.x-stick.lx;
+    if(dx>0) car.vx=Math.min(car.vx+dx*6, W*0.75);
+    else car.vx=Math.max(car.vx+dx*3, W*0.06);
+    car.dir=1;
     stick.lx=p.x; stick.ly=p.y;
   });
   function stickEnd(e){ if(stick.id===null || (e && e.pointerId!==stick.id)) return; stick.id=null; }
@@ -10082,10 +10253,10 @@ document.addEventListener("click", function(e){
   window.addEventListener("keydown",function(e){
     if(!G.run) return;
     var k=e.key.toLowerCase();
-    if(k==="arrowleft"||k==="a") keys.left=1;
-    if(k==="arrowright"||k==="d") keys.right=1;
-    if(k==="arrowup"||k==="w") keys.up=1;
-    if(k==="arrowdown"||k==="s") keys.down=1;
+    if(k==="arrowup"||k==="w") keys.left=1;
+    if(k==="arrowdown"||k==="s") keys.right=1;
+    if(k==="arrowleft"||k==="a") keys.up=1;
+    if(k==="arrowright"||k==="d") keys.down=1;
     if(k===" "||k==="j"){ e.preventDefault(); useSkill("boost"); }
     if(k==="q") useSkill("net");
     if(k==="e") useSkill("horn");
@@ -10093,10 +10264,10 @@ document.addEventListener("click", function(e){
   });
   window.addEventListener("keyup",function(e){
     var k=e.key.toLowerCase();
-    if(k==="arrowleft"||k==="a") keys.left=0;
-    if(k==="arrowright"||k==="d") keys.right=0;
-    if(k==="arrowup"||k==="w") keys.up=0;
-    if(k==="arrowdown"||k==="s") keys.down=0;
+    if(k==="arrowup"||k==="w") keys.left=0;
+    if(k==="arrowdown"||k==="s") keys.right=0;
+    if(k==="arrowleft"||k==="a") keys.up=0;
+    if(k==="arrowright"||k==="d") keys.down=0;
   });
 
   /* ---------- 选择页 ---------- */
@@ -10120,6 +10291,12 @@ document.addEventListener("click", function(e){
   if(again) again.onclick=function(){ OVER.className=""; start(); };
   var selBtn=document.getElementById("bzSelBtn");
   if(selBtn) selBtn.onclick=function(){ OVER.className=""; showSelect(); };
+  var backL=document.getElementById("bzBackList");
+  if(backL) backL.onclick=function(){
+    G.run=false; if(G.raf){ cancelAnimationFrame(G.raf); G.raf=0; }
+    OV.style.display="none"; SEL.className="";
+    closeAllOverlays(); document.getElementById("moreGamesOverlay").style.display="flex";
+  };
   var close=document.getElementById("bzClose");
   if(close) close.onclick=function(){
     G.run=false; if(G.raf){ cancelAnimationFrame(G.raf); G.raf=0; }

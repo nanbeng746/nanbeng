@@ -176,12 +176,33 @@
     if (!c) { say("先登录自己的账号。"); return; }
     var code = ($("coopCodeInput").value || "").trim();
     if (!code) { say("先填写房间码。"); return; }
-    var joined = await c.rpc("join_coop_room", { p_code: code });
-    roomId = roomIdFrom(joined);
+    if (window.BengNet && /^\d{6}$/.test(code)) {
+      try {
+        var r = await window.BengNet.joinByDigit(code, "coop");
+        roomId = r.roomId;
+      } catch (e) { say(e && e.message ? e.message : "进房失败"); return; }
+    } else {
+      var joined = await c.rpc("join_coop_room", { p_code: code });
+      roomId = roomIdFrom(joined);
+    }
     if (!roomId) { say("进不去。房间码不对、已满、已关闭、已过期或试得太频繁。页面不会说明是哪一种。"); return; }
     sawStart = false;
     startLoops();
     tick();
+  }
+
+  async function joinRandom() {
+    if (!window.BengNet) { say("联机组件没加载，刷新页面。"); return; }
+    say("正在找一间空房…");
+    try {
+      var r = await window.BengNet.joinRandom("coop");
+      roomId = r.roomId;
+      if (r.digit) $("coopCodeInput").value = r.digit;
+      sawStart = false;
+      startLoops();
+      tick();
+      say("随机进房成功。房间 " + (r.digit || r.code) + "。");
+    } catch (e) { say(e && e.message ? e.message : "没找到能进的房"); }
   }
 
   async function ready() {
@@ -228,6 +249,17 @@
     };
     $("coopCreateBtn").onclick = createRoom;
     $("coopJoinBtn").onclick = joinRoom;
+    var rnd = $("coopRandomBtn");
+    if (rnd) rnd.onclick = joinRandom;
+    var back = $("coopBackBtn");
+    if (back) back.onclick = function () {
+      if (window.BengCoop && BengCoop.leaveRoom) BengCoop.leaveRoom();
+      var c = client();
+      if (c && roomId) { try { c.from("coop_members").delete().eq("room_id", roomId); } catch (e) {} }
+      roomId = null; stopLoops();
+      $("coopOverlay").style.display = "none";
+      $("songLobby").style.display = "flex";
+    };
     $("coopReadyBtn").onclick = ready;
     $("coopStartBtn").onclick = hostStart;
     $("coopHostCloseBtn").onclick = function () {
