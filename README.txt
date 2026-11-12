@@ -60,4 +60,6 @@ ys021-030.m4a       低音质·Ave Mujica 新歌（80kbps AAC，约 2-3MB 一首
   Mujica 五张立绘 ck_SACK / ck_WAKA / ck_UTSU / ck_NAMAI / ck_SAKI.jpg。
   缺了页面照样能跑，只是背景是暗的、Mujica 卡池立绘是空白。
 - 新歌 21-30 的谱面已写进 charts.js（onset-v3），音频是 ys021-030.m4a。
+- 枪战黑屏已修（update 被迈巴赫代码污染，已重写）；迈巴赫改成横版赛车追人，
+  油门/刹车/换道 + 滚动路面 + 速度表，详见《Mujica枪战与合成说明.txt》第十一节。
 - MyGO 高音质 02-12 本地无备份（当初只备份了 01、13），需要你从自己的歌里补。
